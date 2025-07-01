@@ -10,11 +10,9 @@ CONFIG += c++17 cmdline
 SOURCES += main.cpp \
            InputMenu.cpp \
            ExperimentWindow.cpp
-           # Switcher.cpp
 
 HEADERS += InputMenu.h \
             ExperimentWindow.h
-            # Switcher.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
