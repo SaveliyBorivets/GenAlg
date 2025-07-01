@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// 🎲 Тип мутации
+// Тип мутации
 enum class MutationType {
     add_remove, // Удаление/вставка
     change      // Обмен
