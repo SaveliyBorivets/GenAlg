@@ -18,8 +18,10 @@ private:
 public:
   // DataManager(/* args */);
   void add(std::string name, float weight, float price);
-  Item randomTake(float upBoard);
+  int randomTake(float upBoard);
   void loadFile(std::string path);
+  std::vector<Item> getItems();
+  float getMaxWeight();
   // ~DataManager();
 };
 

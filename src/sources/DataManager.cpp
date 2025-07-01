@@ -33,16 +33,15 @@ void DataManager::add(std::string name, float weight, float price) {
   itemsNum++;
 }
 
-Item DataManager::randomTake(float upBoard) {
+int DataManager::randomTake(float upBoard) {
   std::random_device rd;
   std::mt19937 gen(rd());
   int pos = binaryPosition(upBoard);
-  // if (pos == 0) {
-  //   std::uniform_int_distribution<> dist(0, items.size() - 1);
-  //   return items[dist(gen)];
-  // }
+  if (pos == 0) {
+    return -1;
+  }
   std::uniform_int_distribution<> dist(0, pos - 1);
-  return items[dist(gen)];
+  return dist(gen);
 }
 
 void DataManager::loadFile(std::string path) {
@@ -62,4 +61,12 @@ void DataManager::loadFile(std::string path) {
     }
   }
   file.close();
+}
+
+std::vector<Item> DataManager::getItems() {
+  return items;
+}
+
+float DataManager::getMaxWeight() {
+  return maxWeight;
 }
