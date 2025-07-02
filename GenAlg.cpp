@@ -2,14 +2,14 @@
 using namespace std;
 
 // Конструктор
-GeneticAlgorithm::GeneticAlgorithm(int popSize, int maxGen, Crossover cros, Mutations mut, SelectionType selType)
-    : crossover(cros), mutation(mut), maxGenerations(maxGen), selectionMethod(selType) {
+GeneticAlgorithm::GeneticAlgorithm(int popSize, int maxGen, Crossover cros, Mutations mut, SelectionType selType, DataManager data)
+    : crossover(cros), mutation(mut), maxGenerations(maxGen), selectionMethod(selType), Data(data){
+    
     random_device rd;
     gen.seed(rd());
 
-    population.resize(popSize);
-    for (auto& b : population) {
-        b.randomInit();
+    for (int i = 0; i < popSize; ++i) {
+        population.emplace_back(data);
     }
 }
 
@@ -24,8 +24,9 @@ pair<Backpack, Backpack> GeneticAlgorithm::selectParents() {
 
 // Вычисление пригодностей
 void GeneticAlgorithm::evaluateFitness() {
+    fitnesses.clear();
     for (auto& indiv : population) {
-        indiv.getTotalWeight();
+        fitnesses.push_back(indiv.getValueV1(Data));
     }
 }
 
@@ -42,7 +43,7 @@ Backpack GeneticAlgorithm::tournamentSelection() {
     Backpack b = population[index2];
 
     // Схватка
-    if (a.getTotalWeight() > b.getTotalWeight()) {
+    if (a.getValueV1(Data) > b.getValueV1(Data)) {
         return a;
     }
     return b;
@@ -53,7 +54,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
     // Общая приспособленность
     float totalFitness = 0;
     for (auto& b : population){
-        totalFitness += b.fitness;
+        totalFitness += b.getValueV1(Data);
     } 
     // Взятие случайной длины
     uniform_real_distribution<float> dist(0, totalFitness);
@@ -61,7 +62,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
     float current = 0;
     // Выбор особи
     for (auto& b : population) {
-        current += b.getTotalPrice;
+        current += b.getValueV1(Data);
         if (current >= pick){
             return b;
         }
@@ -73,7 +74,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
 float GeneticAlgorithm::AverageFitness() {
     float sum = 0;
     for (auto& b : population)
-        sum += b.fitness;
+        sum += b.getValueV1(Data);
     return sum / population.size();
 }
 
@@ -81,7 +82,7 @@ float GeneticAlgorithm::AverageFitness() {
 float GeneticAlgorithm::BestFitness() {
     float best = 0;
     for (auto& b : population)
-        best = max(best, b.fitness);
+        best = max(best, b.getValueV1(Data));
     return best;
 }
 

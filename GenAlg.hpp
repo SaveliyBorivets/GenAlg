@@ -16,8 +16,9 @@ enum class SelectionType {
 class GeneticAlgorithm {
 private:
     mt19937 gen;
-
+    DataManager Data;
     vector<Backpack> population; // Популяция
+    vector<float> fitnesses; // Пригодности
     Crossover crossover; // Класс скрещивания
     Mutations mutation; // Класс мутаций
     SelectionType selectionMethod; // Метод отбора
@@ -34,7 +35,7 @@ private:
     float BestFitness();
 
 public:
-    GeneticAlgorithm(int popSize, int maxGen, Crossover cros, Mutations mut, SelectionType selType);
+    GeneticAlgorithm(int popSize, int maxGen, Crossover cros, Mutations mut, SelectionType selType, DataManager data);
 
     int get_genCount();
     vector<float> get_averageFitness();
