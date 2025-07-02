@@ -39,19 +39,19 @@ void Backpack::addItem(int pos, DataManager data) {
   totalWeight += data.getItems()[pos].weight;
 }
 
-const std::vector<int> Backpack::getSolution() {
+std::vector<int> Backpack::getSolution() const {
   return solution;
 }
 
-const float Backpack::getTotalPrice() {
+float Backpack::getTotalPrice() const {
   return totalPrice;
 }
 
-const float Backpack::getTotalWeight() {
+float Backpack::getTotalWeight() const {
   return totalWeight;
 }
 
-const float Backpack::getFitnessValue1(DataManager data) {
+float Backpack::getFitnessValue1(DataManager data) const {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
   for (int i = 0; i < items.size(); i++) {
@@ -63,7 +63,7 @@ const float Backpack::getFitnessValue1(DataManager data) {
   return totalVal;
 }
 
-const float Backpack::getFitnessValue2(DataManager data) {
+float Backpack::getFitnessValue2(DataManager data) const {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
   for (int i = 0; i < items.size(); i++) {

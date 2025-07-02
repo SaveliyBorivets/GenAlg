@@ -16,13 +16,13 @@ public:
   Backpack(DataManager data);
   void delItem(int pos, DataManager data);
   void addItem(int pos, DataManager data);
-  const std::vector<int> getSolution();
-  const float getTotalPrice();
-  const float getTotalWeight();
+  std::vector<int> getSolution() const;
+  float getTotalPrice() const;
+  float getTotalWeight() const;
   // ценность вещей которые можно поместить в рюкзак
-  const float getFitnessValue1(DataManager data);
+  float getFitnessValue1(DataManager data) const;
   // если перебор по весу приспособленность = 0
-  const float getFitnessValue2(DataManager data);
+  float getFitnessValue2(DataManager data) const;
   // ~Backpack();
 };
 
