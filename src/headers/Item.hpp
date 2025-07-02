@@ -5,7 +5,6 @@
 
 struct Item
 {
-    std::string name;
     double price;
     double weight;
     double unitPrice;

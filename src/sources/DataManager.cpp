@@ -5,7 +5,7 @@
 #include <random>
 #include <iostream>
 
-int DataManager::binaryPosition(float weight){
+int DataManager::binarySearch(float weight){
   int left = 0;
   int right = itemsNum;
   while (left < right) {
@@ -16,19 +16,24 @@ int DataManager::binaryPosition(float weight){
       right = mid;
     }
   }
+
+  // Если будут одинаковые веса
+  while (left + 1 < itemsNum && items[left].weight == items[left + 1].weight) {
+    left++;
+  }
+  left++; // После всех вещей с таким же весом
   return left;
 }
 
-void DataManager::add(std::string name, float weight, float price) {
-  if (weight <= 0) {
+void DataManager::add(float price, float weight) {
+  if (weight <= 0 || weight > maxWeight || price <= 0) {
     return;
   }
   Item something;
-  something.name = name;
-  something.weight = weight;
   something.price = price;
+  something.weight = weight;
   something.unitPrice = price / weight;
-  int pos = binaryPosition(weight);
+  int pos = binarySearch(weight);
   items.insert(items.begin() + pos, something);
   itemsNum++;
 }
@@ -36,7 +41,7 @@ void DataManager::add(std::string name, float weight, float price) {
 int DataManager::randomTake(float upBoard) {
   std::random_device rd;
   std::mt19937 gen(rd());
-  int pos = binaryPosition(upBoard);
+  int pos = binarySearch(upBoard);
   if (pos == 0) {
     return -1;
   }
@@ -49,18 +54,55 @@ void DataManager::loadFile(std::string path) {
   if (!file.is_open()) {
     throw std::runtime_error("Ошибка открытия файла: " + path);
   }
-  std::string line;
-  float price, weight;
-  std::string name;
-  while (std::getline(file, line)) {
-    std::istringstream iss(line);
-    if (iss >> name >> price >> weight) {
-      add(name, price, weight); 
-    } else {
-      std::cerr << "Некорректная строка: " << line << std::endl;
+
+  std::string fileText(
+      (std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>()
+  );
+
+  stringParse(fileText);
+
+  file.close();
+}
+
+void DataManager::stringParse(std::string input) {
+  std::istringstream iss(input);
+
+  iss >> maxWeight >> populationSize >> itemsNum;
+
+  if (iss.fail()) {
+    throw std::runtime_error("Ошибка чтения основных параметров");
+  }
+
+  // Цены
+  std::vector<double> prices(itemsNum);
+  for (int i = 0; i < itemsNum; ++i) {
+    if (!(iss >> prices[i])) {
+      throw std::runtime_error("Ошибка чтения цен предметов");
     }
   }
-  file.close();
+
+  // Веса
+  std::vector<double> weights(itemsNum);
+  for (int i = 0; i < itemsNum; ++i) {
+    if (!(iss >> weights[i])) {
+      throw std::runtime_error("Ошибка чтения весов предметов");
+    }
+  }
+
+  // Проверяем, что все данные считаны корректно
+  if (!iss.eof()) {
+    std::string remaining;
+    std::getline(iss, remaining);
+    if (!remaining.empty()) {
+      std::cerr << "Предупреждение: лишние данные в конце строки: " << remaining << std::endl;
+    }
+  }
+
+  this->items.resize(itemsNum);
+  for (int i = 0; i < itemsNum; ++i) {
+    add(prices[i], weights[i]);
+  }
 }
 
 std::vector<Item> DataManager::getItems() {

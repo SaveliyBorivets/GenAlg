@@ -12,14 +12,15 @@ private:
   std::vector<Item> items;
   int itemsNum;
   float maxWeight;
-  int pupulationSize;
+  int populationSize;
 
-  int binaryPosition(float weight);
+  int binarySearch(float weight);
 public:
   // DataManager(/* args */);
-  void add(std::string name, float weight, float price);
+  void add(float weight, float price);
   int randomTake(float upBoard);
   void loadFile(std::string path);
+  void stringParse(std::string info);
   std::vector<Item> getItems();
   float getMaxWeight();
   // ~DataManager();
