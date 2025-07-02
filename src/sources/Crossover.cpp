@@ -6,21 +6,21 @@ Crossover::Crossover(float prob, CrossoverType t)
   gen.seed(rd());
 }
 
-std::pair<Backpack, Backpack> Crossover::cross(const Backpack& parent1, const Backpack& parent2, DataManager& data) {
+std::pair<Backpack, Backpack> Crossover::cross(const Backpack& parent1, const Backpack& parent2) {
   std::uniform_real_distribution<float> chance(0.0, 1.0);
   if (chance(gen) > probability)
     return {parent1, parent2};
   switch (type) {
     case CrossoverType::OnePoint:
-      return onePoint(parent1, parent2, data);
+      return onePoint(parent1, parent2);
     case CrossoverType::TwoPoint:
-      return twoPoint(parent1, parent2, data);
+      return twoPoint(parent1, parent2);
     case CrossoverType::Uniform:
-      return uniform(parent1, parent2, data);
+      return uniform(parent1, parent2);
   }
 }
 
-std::pair<Backpack, Backpack> Crossover::onePoint(const Backpack& parent1, const Backpack& parent2, DataManager& data) {
+std::pair<Backpack, Backpack> Crossover::onePoint(const Backpack& parent1, const Backpack& parent2) {
   const auto& sol1 = parent1.getSolution(); 
   const auto& sol2 = parent2.getSolution();  
   int size = sol1.size();
@@ -37,11 +37,11 @@ std::pair<Backpack, Backpack> Crossover::onePoint(const Backpack& parent1, const
       solution2[i] = sol1[i];
     }
   }
-  Backpack child1(solution1, data), child2(solution2, data);
+  Backpack child1(solution1), child2(solution2);
   return {child1, child2};
 }
 
-std::pair<Backpack, Backpack> Crossover::twoPoint(const Backpack& parent1, const Backpack& parent2, DataManager& data) {
+std::pair<Backpack, Backpack> Crossover::twoPoint(const Backpack& parent1, const Backpack& parent2) {
   const auto& sol1 = parent1.getSolution();
   const auto& sol2 = parent2.getSolution();
   int size = sol1.size();
@@ -60,11 +60,11 @@ std::pair<Backpack, Backpack> Crossover::twoPoint(const Backpack& parent1, const
       solution2[i] = sol1[i];
     }
   }
-  Backpack child1(solution1, data), child2(solution2, data);
+  Backpack child1(solution1), child2(solution2);
   return {child1, child2};
 }
 
-std::pair<Backpack, Backpack> Crossover::uniform(const Backpack& parent1, const Backpack& parent2, DataManager& data) {
+std::pair<Backpack, Backpack> Crossover::uniform(const Backpack& parent1, const Backpack& parent2) {
   const auto& sol1 = parent1.getSolution(); 
   const auto& sol2 = parent2.getSolution();
   int size = sol1.size();
@@ -80,6 +80,6 @@ std::pair<Backpack, Backpack> Crossover::uniform(const Backpack& parent1, const 
       solution2[i] = sol1[i];
     }
   }
-  Backpack child1(solution1, data), child2(solution2, data);
+  Backpack child1(solution1), child2(solution2);
   return {child1, child2};
 }
