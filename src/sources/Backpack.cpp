@@ -24,30 +24,34 @@ Backpack::Backpack(DataManager data) {
   }
 }
 
-void Backpack::delItem(int pos) {
+void Backpack::delItem(int pos, DataManager data) {
   if (solution[pos] == 0) {
     return;
   }
   solution[pos] -= 1;
+  totalPrice -= data.getItems()[pos].price;
+  totalWeight -= data.getItems()[pos].weight;
 }
 
-void Backpack::addItem(int pos) {
+void Backpack::addItem(int pos, DataManager data) {
   solution[pos] += 1;
+  totalPrice += data.getItems()[pos].price;
+  totalWeight += data.getItems()[pos].weight;
 }
 
-std::vector<int> Backpack::getSolution() {
+const std::vector<int> Backpack::getSolution() {
   return solution;
 }
 
-float Backpack::getTotalPrice() {
+const float Backpack::getTotalPrice() {
   return totalPrice;
 }
 
-float Backpack::getTotalWeight() {
+const float Backpack::getTotalWeight() {
   return totalWeight;
 }
 
-float Backpack::getValueV1(DataManager data) {
+const float Backpack::getFitnessValue1(DataManager data) {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
   for (int i = 0; i < items.size(); i++) {
@@ -59,7 +63,7 @@ float Backpack::getValueV1(DataManager data) {
   return totalVal;
 }
 
-float Backpack::getValueV2(DataManager data) {
+const float Backpack::getFitnessValue2(DataManager data) {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
   for (int i = 0; i < items.size(); i++) {

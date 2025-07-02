@@ -14,15 +14,15 @@ private:
 public:
   Backpack(std::vector<int> solution, DataManager data);
   Backpack(DataManager data);
-  void delItem(int pos);
-  void addItem(int pos);
-  std::vector<int> getSolution();
-  float getTotalPrice();
-  float getTotalWeight();
+  void delItem(int pos, DataManager data);
+  void addItem(int pos, DataManager data);
+  const std::vector<int> getSolution();
+  const float getTotalPrice();
+  const float getTotalWeight();
   // ценность вещей которые можно поместить в рюкзак
-  float getValueV1(DataManager data);
+  const float getFitnessValue1(DataManager data);
   // если перебор по весу приспособленность = 0
-  float getValueV2(DataManager data);
+  const float getFitnessValue2(DataManager data);
   // ~Backpack();
 };
 
