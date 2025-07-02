@@ -1,17 +1,12 @@
 #include "../headers/GeneticAlgorithm.hpp"
 
-using namespace std;
-
 // Конструктор
-GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(0.6, CrossoverType::OnePoint), mutation(0.01, MutationType::CHANGE) {
-
-    random_device rd;
+GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(1, CrossoverType::Uniform), mutation(0.01, MutationType::ADD_REMOVE) {
+    std::random_device rd;
     gen.seed(rd());
-
-    selectionMethod = SelectionType::Roulette;
+    selectionMethod = SelectionType::Tournament;
     generationCount = 0;
     maxGenerations = 50;
-
     for (int i = 0; i < Data.getPopulationSize(); ++i) {
         Backpack randomBackpack(data);
         population.emplace_back(randomBackpack);
@@ -19,7 +14,7 @@ GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(0.6
 }
 
 // Отбор пары родителей
-pair<Backpack, Backpack> GeneticAlgorithm::selectParents() {
+std::pair<Backpack, Backpack> GeneticAlgorithm::selectParents() {
     if (selectionMethod == SelectionType::Tournament) {
         return {tournamentSelection(), tournamentSelection()}; // Методом турнира
     } else {
@@ -36,22 +31,41 @@ void GeneticAlgorithm::evaluateFitness() {
 }
 
 // Отбор турниром. Раунд для двоих
-Backpack GeneticAlgorithm::tournamentSelection() {
-    // Выбор случайных особей
-    uniform_int_distribution<int> dist(0, population.size() - 1);
-    int index1 = dist(gen);
-    int index2 = dist(gen);
-    while (index1 == index2) {
-        index2 = dist(gen);
-    }
-    Backpack a = population[index1];
-    Backpack b = population[index2];
+// Backpack GeneticAlgorithm::tournamentSelection() {
+//     // Выбор случайных особей
+//     std::uniform_int_distribution<int> dist(0, population.size() - 1);
+//     int index1 = dist(gen);
+//     int index2 = dist(gen);
+//     while (index1 == index2) {
+//         index2 = dist(gen);
+//     }
+//     Backpack a = population[index1];
+//     Backpack b = population[index2];
+//     if (a.getFitnessValue1(Data) > b.getFitnessValue1(Data)) {
+//         return a;
+//     }
+//     return b;
+// }
 
-    // Схватка
-    if (a.getFitnessValue1(Data) > b.getFitnessValue1(Data)) {
-        return a;
+Backpack GeneticAlgorithm::tournamentSelection() {
+    std::uniform_int_distribution<int> dist(0, population.size() - 1);
+    size_t n = 4;
+    // Выбираем n уникальных случайных индекса
+    std::vector<int> indices;
+    while (indices.size() < n) {
+        int idx = dist(gen);
+        if (std::find(indices.begin(), indices.end(), idx) == indices.end()) {
+            indices.push_back(idx);
+        }
     }
-    return b;
+    // Находим особь с максимальной приспособленностью
+    Backpack* best = &population[indices[0]];
+    for (size_t i = 1; i < n; ++i) {
+        if (population[indices[i]].getFitnessValue1(Data) > best->getFitnessValue1(Data)) {
+            best = &population[indices[i]];
+        }
+    }
+    return *best;
 }
 
 // Отбор рулеткой
@@ -62,7 +76,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
         totalFitness += b.getFitnessValue1(Data);
     } 
     // Взятие случайной длины
-    uniform_real_distribution<float> dist(0, totalFitness);
+    std::uniform_real_distribution<float> dist(0, totalFitness);
     float pick = dist(gen);
     float current = 0;
     // Выбор особи
@@ -87,7 +101,7 @@ float GeneticAlgorithm::AverageFitness() {
 float GeneticAlgorithm::BestFitness() {
     float best = 0;
     for (auto& b : population)
-        best = max(best, b.getFitnessValue1(Data));
+        best = std::max(best, b.getFitnessValue1(Data));
     return best;
 }
 
@@ -97,12 +111,12 @@ int GeneticAlgorithm::getGenCount() {
 }
 
 // Передача средней приспособленности
-vector<float> GeneticAlgorithm::getAverageFitness() {
+std::vector<float> GeneticAlgorithm::getAverageFitness() {
     return averageFitnessHistory;
 }
 
 // Передача лучшей приспособленности
-vector<float> GeneticAlgorithm::getBestFitness() {
+std::vector<float> GeneticAlgorithm::getBestFitness() {
     return bestFitnessHistory;
 }
 
@@ -114,7 +128,7 @@ void GeneticAlgorithm::runGeneration() {
     bestFitnessHistory.push_back(BestFitness());
 
     // Новое поколение
-    vector<Backpack> newPopulation;
+    std::vector<Backpack> newPopulation;
     while (newPopulation.size() < population.size()) {
         // Выбор родителей и их скрещивание
         auto [p1, p2] = selectParents();
@@ -130,12 +144,19 @@ void GeneticAlgorithm::runGeneration() {
 
     }
     population = std::move(newPopulation); // Смена поколений
+    std::cout << "Лучший: " << bestFitnessHistory.back() << " Средний: " << averageFitnessHistory.back() << std::endl;
+    for (int i = 0; i < 15; ++i) {
+        std::cout << population[i].getFitnessValue1(Data) << ' ';
+    }
+    std::cout << std::endl;
     generationCount++;
 }
 
 // Запуск алгоритма
 void GeneticAlgorithm::run() {
     while (generationCount < maxGenerations) {
-        runGeneration();
+        runGeneration(); 
     }
+    std::cout << "Прогресс среднего: " << averageFitnessHistory.back() - averageFitnessHistory[0]
+        << " Прогрес лучшего: " << bestFitnessHistory.back() - bestFitnessHistory[0] << std::endl;
 }

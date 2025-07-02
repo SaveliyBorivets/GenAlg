@@ -39,9 +39,9 @@ float Backpack::getFitnessValue1(DataManager data) const {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
   for (size_t i = 0; i < items.size(); i++) {
-    if (weight <= data.getMaxCapacity()) {
+    if (weight + items[i].weight * solution[i] <= data.getMaxCapacity()) {
       totalVal += items[i].price * solution[i];
-      weight += items[i].price * solution[i];
+      weight += items[i].weight * solution[i];
     }
   }
   return totalVal;
@@ -52,10 +52,16 @@ float Backpack::getFitnessValue2(DataManager data) const {
   std::vector<Item> items = data.getItems();
   for (size_t i = 0; i < items.size(); i++) {
     totalVal += items[i].price * solution[i];
-    weight += items[i].price * solution[i];
+    weight += items[i].weight * solution[i];
     if (weight > data.getMaxCapacity()) {
       return 0;
     }
   }
   return totalVal;
 }
+
+// void Backpack::printBackpack() {
+//   for (size_t i = 0; i < solution; ++i) {
+
+//   }
+// }
