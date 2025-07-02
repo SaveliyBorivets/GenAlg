@@ -9,7 +9,10 @@ BIN_DIR := .
 
 SOURCES := main.cpp \
            $(SRC_DIR)/DataManager.cpp \
-           $(SRC_DIR)/Backpack.cpp
+           $(SRC_DIR)/Backpack.cpp \
+           $(SRC_DIR)/Crossover.cpp \
+           $(SRC_DIR)/Mutation.cpp \
+           $(SRC_DIR)/GeneticAlgorithm.cpp
 
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 TARGET := $(BIN_DIR)/genalg
