@@ -10,8 +10,7 @@ class DataManager
 {
 private:
   std::vector<Item> items;
-  int itemsNum;
-  float maxWeight;
+  float maxCapacity;
   int populationSize;
 
   int binarySearch(float weight);
@@ -22,7 +21,9 @@ public:
   void loadFile(std::string path);
   void stringParse(std::string info);
   std::vector<Item> getItems();
-  float getMaxWeight();
+  float getMaxCapacity();
+  int getPopulationSize();
+  int getItemsNum();
   // ~DataManager();
 };
 

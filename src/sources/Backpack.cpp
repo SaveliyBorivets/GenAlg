@@ -5,7 +5,7 @@ Backpack::Backpack(std::vector<int> sol, DataManager data) {
   totalPrice = 0;
   totalWeight = 0;
   std::vector<Item> items = data.getItems();
-  for (int i = 0; i < items.size(); ++i) {
+  for (size_t i = 0; i < items.size(); ++i) {
     totalPrice += items[i].price * sol[i];
     totalWeight += items[i].weight * sol[i];
   }
@@ -17,7 +17,7 @@ Backpack::Backpack(DataManager data) {
   std::vector<Item> items = data.getItems();
   solution = std::vector<int>(items.size(), 0);
   int pos;
-  while ((pos = data.randomTake(data.getMaxWeight() - totalWeight)) != -1) {
+  while ((pos = data.randomTake(data.getMaxCapacity() - totalWeight)) != -1) {
     solution[pos] += 1;
     totalPrice += items[pos].price;
     totalWeight += items[pos].weight;
@@ -39,6 +39,10 @@ void Backpack::addItem(int pos, DataManager data) {
   totalWeight += data.getItems()[pos].weight;
 }
 
+void Backpack::editSolution(int pos, int amount) {
+  solution[pos] = amount;
+}
+
 std::vector<int> Backpack::getSolution() const {
   return solution;
 }
@@ -54,8 +58,8 @@ float Backpack::getTotalWeight() const {
 float Backpack::getFitnessValue1(DataManager data) const {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
-  for (int i = 0; i < items.size(); i++) {
-    if (weight <= data.getMaxWeight()) {
+  for (size_t i = 0; i < items.size(); i++) {
+    if (weight <= data.getMaxCapacity()) {
       totalVal += items[i].price * solution[i];
       weight += items[i].price * solution[i];
     }
@@ -66,10 +70,10 @@ float Backpack::getFitnessValue1(DataManager data) const {
 float Backpack::getFitnessValue2(DataManager data) const {
   float totalVal = 0, weight = 0;
   std::vector<Item> items = data.getItems();
-  for (int i = 0; i < items.size(); i++) {
+  for (size_t i = 0; i < items.size(); i++) {
     totalVal += items[i].price * solution[i];
     weight += items[i].price * solution[i];
-    if (weight > data.getMaxWeight()) {
+    if (weight > data.getMaxCapacity()) {
       return 0;
     }
   }

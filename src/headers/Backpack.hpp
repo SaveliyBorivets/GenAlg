@@ -2,6 +2,7 @@
 #define BACKPACK_H
 
 #include <vector>
+#include <cstddef>
 
 #include "DataManager.hpp"
 
@@ -16,6 +17,7 @@ public:
   Backpack(DataManager data);
   void delItem(int pos, DataManager data);
   void addItem(int pos, DataManager data);
+  void editSolution(int pos, int amount);
   std::vector<int> getSolution() const;
   float getTotalPrice() const;
   float getTotalWeight() const;

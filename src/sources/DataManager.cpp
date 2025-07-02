@@ -7,26 +7,21 @@
 
 int DataManager::binarySearch(float weight){
   int left = 0;
-  int right = itemsNum;
+  int right = items.size();
   while (left < right) {
     int mid = left + (right - left) / 2;
-    if (items[mid].weight < weight) {
+    if (items[mid].weight <= weight) {
       left = mid + 1;
     } else {
       right = mid;
     }
   }
 
-  // Если будут одинаковые веса
-  while (left + 1 < itemsNum && items[left].weight == items[left + 1].weight) {
-    left++;
-  }
-  left++; // После всех вещей с таким же весом
   return left;
 }
 
 void DataManager::add(float price, float weight) {
-  if (weight <= 0 || weight > maxWeight || price <= 0) {
+  if (weight <= 0 || weight > maxCapacity || price <= 0) {
     return;
   }
   Item something;
@@ -35,7 +30,6 @@ void DataManager::add(float price, float weight) {
   something.unitPrice = price / weight;
   int pos = binarySearch(weight);
   items.insert(items.begin() + pos, something);
-  itemsNum++;
 }
 
 int DataManager::randomTake(float upBoard) {
@@ -68,7 +62,8 @@ void DataManager::loadFile(std::string path) {
 void DataManager::stringParse(std::string input) {
   std::istringstream iss(input);
 
-  iss >> maxWeight >> populationSize >> itemsNum;
+  int itemsNum;
+  iss >> maxCapacity >> populationSize >> itemsNum;
 
   if (iss.fail()) {
     throw std::runtime_error("Ошибка чтения основных параметров");
@@ -99,7 +94,7 @@ void DataManager::stringParse(std::string input) {
     }
   }
 
-  this->items.resize(itemsNum);
+//  items.resize(itemsNum);
   for (int i = 0; i < itemsNum; ++i) {
     add(prices[i], weights[i]);
   }
@@ -109,6 +104,14 @@ std::vector<Item> DataManager::getItems() {
   return items;
 }
 
-float DataManager::getMaxWeight() {
-  return maxWeight;
+float DataManager::getMaxCapacity() {
+  return maxCapacity;
+}
+
+int DataManager::getPopulationSize() {
+  return populationSize;
+}
+
+int DataManager::getItemsNum() {
+  return items.size();
 }
