@@ -1,25 +1,17 @@
 #include "../headers/Backpack.hpp"
 
-Backpack::Backpack(std::vector<int> sol, DataManager data) {
+Backpack::Backpack(std::vector<int> sol) {
   solution = sol;
-  totalPrice = 0;
-  totalWeight = 0;
-  std::vector<Item> items = data.getItems();
-  for (size_t i = 0; i < items.size(); ++i) {
-    totalPrice += items[i].price * sol[i];
-    totalWeight += items[i].weight * sol[i];
-  }
 }
 
 Backpack::Backpack(DataManager data) {
-  totalPrice = 0;
-  totalWeight = 0;
+  float totalPrice = 0;
+  float totalWeight = 0;
   std::vector<Item> items = data.getItems();
   solution = std::vector<int>(items.size(), 0);
   int pos;
   while ((pos = data.randomTake(data.getMaxCapacity() - totalWeight)) != -1) {
     solution[pos] += 1;
-    totalPrice += items[pos].price;
     totalWeight += items[pos].weight;
   }
 }
@@ -29,14 +21,10 @@ void Backpack::delItem(int pos, DataManager data) {
     return;
   }
   solution[pos] -= 1;
-  totalPrice -= data.getItems()[pos].price;
-  totalWeight -= data.getItems()[pos].weight;
 }
 
 void Backpack::addItem(int pos, DataManager data) {
   solution[pos] += 1;
-  totalPrice += data.getItems()[pos].price;
-  totalWeight += data.getItems()[pos].weight;
 }
 
 void Backpack::editSolution(int pos, int amount) {
@@ -45,14 +33,6 @@ void Backpack::editSolution(int pos, int amount) {
 
 std::vector<int> Backpack::getSolution() const {
   return solution;
-}
-
-float Backpack::getTotalPrice() const {
-  return totalPrice;
-}
-
-float Backpack::getTotalWeight() const {
-  return totalWeight;
 }
 
 float Backpack::getFitnessValue1(DataManager data) const {
