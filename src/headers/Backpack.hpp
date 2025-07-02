@@ -22,6 +22,7 @@ public:
   // если перебор по весу приспособленность = 0
   float getFitnessValue2(DataManager data) const;
   // ~Backpack();
+  void printBackpack();
 };
 
 #endif
