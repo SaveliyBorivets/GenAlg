@@ -43,6 +43,26 @@ int DataManager::randomTake(float upBoard) {
   return dist(gen);
 }
 
+void DataManager::randomLoad() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> capacityDist(50, 1000);
+  maxCapacity = capacityDist(gen);
+  std::uniform_int_distribution<> populationDist(50, 300);
+  populationSize = populationDist(gen);
+  std::uniform_int_distribution<> count(4, 15);
+  int numItems = count(gen);
+
+  std::uniform_real_distribution<> weightDist(1.0, 20.0);
+  std::uniform_real_distribution<> priceDist(1.0, 50.0);
+  float price, weight;
+  for (int i = 0; i < numItems; ++i) {
+    price = priceDist(gen);
+    weight = weightDist(gen);
+    add(price, weight);
+  }
+}
+
 std::string DataManager::loadFile(std::string path) {
   if (path.empty()) return "Введите путь до txt файла";
 
@@ -106,6 +126,14 @@ std::string DataManager::stringParse(std::string input) {
   }
 
   return "Данные успешно считаны";
+}
+
+void DataManager::setFitness(FitnessType fit) {
+  fitness = fit;
+}
+
+FitnessType DataManager::getFitness() {
+  return fitness;
 }
 
 std::vector<Item> DataManager::getItems() {

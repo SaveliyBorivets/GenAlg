@@ -17,6 +17,7 @@ public:
   void addItem(int pos);
   void editSolution(int pos, int amount);
   std::vector<int> getSolution() const;
+  float getFitnessValue(FitnessType fitness, DataManager data) const;
   // ценность вещей которые можно поместить в рюкзак
   float getFitnessValue1(DataManager data) const;
   // если перебор по весу приспособленность = 0

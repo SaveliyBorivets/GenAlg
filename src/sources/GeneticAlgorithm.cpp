@@ -6,7 +6,7 @@ GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(1, 
     gen.seed(rd());
     selectionMethod = SelectionType::Tournament;
     generationCount = 0;
-    maxGenerations = 50;
+    // maxGenerations = 50;
     for (int i = 0; i < Data.getPopulationSize(); ++i) {
         Backpack randomBackpack(data);
         population.emplace_back(randomBackpack);
@@ -26,7 +26,7 @@ std::pair<Backpack, Backpack> GeneticAlgorithm::selectParents() {
 void GeneticAlgorithm::evaluateFitness() {
     fitnesses.clear();
     for (auto& indiv : population) {
-        fitnesses.push_back(indiv.getFitnessValue1(Data));
+        fitnesses.push_back(indiv.getFitnessValue(Data.getFitness(), Data));
     }
 }
 
@@ -41,7 +41,7 @@ void GeneticAlgorithm::evaluateFitness() {
 //     }
 //     Backpack a = population[index1];
 //     Backpack b = population[index2];
-//     if (a.getFitnessValue1(Data) > b.getFitnessValue1(Data)) {
+//     if (a.getFitnessValue(Data.getFitness(), Data) > b.getFitnessValue(Data.getFitness(), Data)) {
 //         return a;
 //     }
 //     return b;
@@ -61,7 +61,7 @@ Backpack GeneticAlgorithm::tournamentSelection() {
     // Находим особь с максимальной приспособленностью
     Backpack* best = &population[indices[0]];
     for (size_t i = 1; i < n; ++i) {
-        if (population[indices[i]].getFitnessValue1(Data) > best->getFitnessValue1(Data)) {
+        if (population[indices[i]].getFitnessValue(Data.getFitness(), Data) > best->getFitnessValue(Data.getFitness(), Data)) {
             best = &population[indices[i]];
         }
     }
@@ -73,7 +73,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
     // Общая приспособленность
     float totalFitness = 0;
     for (auto& b : population){
-        totalFitness += b.getFitnessValue1(Data);
+        totalFitness += b.getFitnessValue(Data.getFitness(), Data);
     } 
     // Взятие случайной длины
     std::uniform_real_distribution<float> dist(0, totalFitness);
@@ -81,7 +81,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
     float current = 0;
     // Выбор особи
     for (auto& b : population) {
-        current += b.getFitnessValue1(Data);
+        current += b.getFitnessValue(Data.getFitness(), Data);
         if (current >= pick){
             return b;
         }
@@ -93,7 +93,7 @@ Backpack GeneticAlgorithm::rouletteSelection() {
 float GeneticAlgorithm::AverageFitness() {
     float sum = 0;
     for (auto& b : population)
-        sum += b.getFitnessValue1(Data);
+        sum += b.getFitnessValue(Data.getFitness(), Data);
     return sum / population.size();
 }
 
@@ -101,7 +101,7 @@ float GeneticAlgorithm::AverageFitness() {
 float GeneticAlgorithm::BestFitness() {
     float best = 0;
     for (auto& b : population)
-        best = std::max(best, b.getFitnessValue1(Data));
+        best = std::max(best, b.getFitnessValue(Data.getFitness(), Data));
     return best;
 }
 
@@ -146,7 +146,7 @@ void GeneticAlgorithm::runGeneration() {
     population = std::move(newPopulation); // Смена поколений
     std::cout << "Лучший: " << bestFitnessHistory.back() << " Средний: " << averageFitnessHistory.back() << std::endl;
     for (int i = 0; i < 15; ++i) {
-        std::cout << population[i].getFitnessValue1(Data) << ' ';
+        std::cout << population[i].getFitnessValue(Data.getFitness(), Data) << ' ';
     }
     std::cout << std::endl;
     generationCount++;
@@ -154,11 +154,28 @@ void GeneticAlgorithm::runGeneration() {
 
 // Запуск алгоритма
 void GeneticAlgorithm::run() {
-    while (generationCount < maxGenerations) {
+    int count = 0;
+    float previousFitness;
+    runGeneration(); 
+    while (count != 15) {
+        previousFitness = bestFitnessHistory.back();
         runGeneration(); 
+        if (previousFitness == bestFitnessHistory.back()) {
+            count++;
+        } else {
+            count = 0;
+        }
     }
     std::cout << "Прогресс среднего: " << averageFitnessHistory.back() - averageFitnessHistory[0]
         << " Прогрес лучшего: " << bestFitnessHistory.back() - bestFitnessHistory[0] << std::endl;
+}
+
+std::vector<float> GeneticAlgorithm::getAverageFitnessHistory() {
+    return averageFitnessHistory;
+}
+
+std::vector<float> GeneticAlgorithm::getBestFitnessHistory() {
+    return bestFitnessHistory;
 }
 
 void GeneticAlgorithm::setCrossoverType(CrossoverType t) {
