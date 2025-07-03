@@ -30,6 +30,7 @@ public:
 
   void setFitness(FitnessType fitn);
   
+  std::string getInfo();
   FitnessType getFitness();
   float getMaxCapacity();
   int getPopulationSize();

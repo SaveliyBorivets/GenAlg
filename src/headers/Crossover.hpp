@@ -26,6 +26,7 @@ public:
     Crossover(float prob, CrossoverType t);
     std::pair<Backpack, Backpack> cross(const Backpack& parent1, const Backpack& parent2); // Скрещивание
     void setType(CrossoverType t);
+    CrossoverType getType();
 };
 
 #endif

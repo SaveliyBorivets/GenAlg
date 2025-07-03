@@ -132,6 +132,22 @@ void DataManager::setFitness(FitnessType fit) {
   fitness = fit;
 }
 
+std::string DataManager::getInfo(){
+  std::string info;
+  info = std::to_string(maxCapacity) + '\n' +  std::to_string(populationSize) + '\n' + std::to_string(items.size()) + '\n';
+  for (int i = 0; i < items.size(); ++i) {
+    info += std::to_string(items[i].price);
+    info += ' ';
+  }
+  info += '\n';
+  for (int i = 0; i < items.size(); ++i) {
+    info += std::to_string(items[i].weight);
+    info += ' ';
+  }
+  info += '\n';
+  return info;
+}
+
 FitnessType DataManager::getFitness() {
   return fitness;
 }
