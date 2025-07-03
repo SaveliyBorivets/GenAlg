@@ -1,5 +1,6 @@
 #include "../headers/Backpack.hpp"
 
+#include <iostream>
 Backpack::Backpack(std::vector<int> sol) {
   solution = sol;
 }
@@ -32,6 +33,16 @@ void Backpack::editSolution(int pos, int amount) {
 
 std::vector<int> Backpack::getSolution() const {
   return solution;
+}
+
+float Backpack::getFitnessValue(FitnessType fitness, DataManager data) const {
+  float totalVal;
+  if (fitness == FitnessType::Gentle) {
+    totalVal = getFitnessValue1(data);
+  } else {
+    totalVal = getFitnessValue2(data);
+  }
+  return totalVal;
 }
 
 float Backpack::getFitnessValue1(DataManager data) const {

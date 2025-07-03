@@ -30,7 +30,7 @@ private:
     std::vector<float> averageFitnessHistory; // Средняя пригодность по поколениям
     std::vector<float> bestFitnessHistory; // Лучшая пригодность по поколениям
     int generationCount = 0; // Счётчик поколений
-    int maxGenerations; // Критерий остановки
+    // int maxGenerations; // Критерий остановки
 
     std::pair<Backpack, Backpack> selectParents();
     void evaluateFitness();
@@ -48,7 +48,7 @@ public:
 
     void runGeneration();
     void run();
-
+    
     // Сеттеры
     void setCrossoverType(CrossoverType t);
     void setMutationType(MutationType t);

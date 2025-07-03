@@ -4,7 +4,9 @@
 
 int main() {
   DataManager dm;
-  dm.loadFile("./data.txt");
+  // dm.loadFile("./data.txt");
+  dm.randomLoad();
+  dm.setFitness(FitnessType::Cutting);
   GeneticAlgorithm go(dm);
   go.run();
 //   Backpack backpack(dm);
