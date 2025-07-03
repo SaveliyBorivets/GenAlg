@@ -53,3 +53,7 @@ void Mutation::getMutation(Backpack& backpack) {
 void Mutation::setType(MutationType t) {
   mutation = t;
 }
+
+MutationType Mutation::getType() {
+  return mutation;
+}

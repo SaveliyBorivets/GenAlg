@@ -7,8 +7,11 @@ int main() {
   // dm.loadFile("./data.txt");
   dm.randomLoad();
   dm.setFitness(FitnessType::Cutting);
+  std::cout << dm.getInfo();
   GeneticAlgorithm go(dm);
-  go.run();
+  std::cout << go.getInfo();
+  std::cout << go.getCeurrentPopulation();
+  // go.run();
 //   Backpack backpack(dm);
 //   for (size_t i = 0; i < backpack.getSolution().size(); i++) {
 // //    std::cout << backpack.getSolution()[i] << " ";

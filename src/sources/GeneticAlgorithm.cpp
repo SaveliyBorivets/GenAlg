@@ -108,6 +108,60 @@ float GeneticAlgorithm::BestFitness() {
     return best;
 }
 
+std::string GeneticAlgorithm::getCeurrentPopulation() {
+    std::string info;
+    int n = population.size(), m = Data.getItems().size();
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            info += std::to_string(population[i].getSolution()[j]) + ' ';
+        }
+        info += '\n';
+    }
+    return info;
+}
+
+
+std::string GeneticAlgorithm::getInfo() {
+    std::string info;
+    switch (crossover.getType())
+    {
+    case CrossoverType::OnePoint:
+        info += "OnePoint\n";
+        break;
+    case CrossoverType::TwoPoint:
+        info += "TwoPoint\n";
+        break;
+    case CrossoverType::Uniform:
+        info += "Uniform\n";
+        break;
+    default:
+        break;
+    }
+    switch (mutation.getType())
+    {
+    case MutationType::CHANGE:
+        info += "Change\n";
+        break;
+    case MutationType::ADD_REMOVE:
+        info += "Add_remove\n";
+        break;
+    default:
+        break;
+    }
+    switch (selectionMethod)
+    {
+    case SelectionType::Tournament:
+        info += "Tournament\n";
+        break;
+    case SelectionType::Roulette:
+        info += "Roulette\n";
+        break;
+    default:
+        break;
+    }
+    return info;
+}
+
 // Передача текущей итерации
 int GeneticAlgorithm::getGenCount() {
     return generationCount;

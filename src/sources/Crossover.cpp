@@ -88,3 +88,7 @@ std::pair<Backpack, Backpack> Crossover::uniform(const Backpack& parent1, const 
 void Crossover::setType(CrossoverType t) {
   type = t;
 }
+
+CrossoverType Crossover::getType() {
+  return type;
+}

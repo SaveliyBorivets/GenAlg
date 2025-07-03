@@ -23,6 +23,7 @@ public:
     Mutation(float prob, MutationType type);
     void getMutation(Backpack& backpack);
     void setType(MutationType t);
+    MutationType getType();
 };
 
 #endif
