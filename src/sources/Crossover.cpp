@@ -1,7 +1,6 @@
 #include "../headers/Crossover.hpp"
 
-Crossover::Crossover(float prob, CrossoverType t)
-  : probability(prob), type(t) {
+Crossover::Crossover(float prob, CrossoverType t) : probability(prob), type(t) {
   std::random_device rd;
   gen.seed(rd());
 }
@@ -18,6 +17,7 @@ std::pair<Backpack, Backpack> Crossover::cross(const Backpack& parent1, const Ba
     case CrossoverType::Uniform:
       return uniform(parent1, parent2);
   }
+  return {parent1, parent2};
 }
 
 std::pair<Backpack, Backpack> Crossover::onePoint(const Backpack& parent1, const Backpack& parent2) {
@@ -82,4 +82,9 @@ std::pair<Backpack, Backpack> Crossover::uniform(const Backpack& parent1, const 
   }
   Backpack child1(solution1), child2(solution2);
   return {child1, child2};
+}
+
+#include <iostream>
+void Crossover::setType(CrossoverType t) {
+  type = t;
 }

@@ -18,8 +18,8 @@ public:
   // DataManager(/* args */);
   void add(float weight, float price);
   int randomTake(float upBoard);
-  void loadFile(std::string path);
-  void stringParse(std::string info);
+  std::string loadFile(std::string path);
+  std::string stringParse(std::string info);
   std::vector<Item> getItems();
   float getMaxCapacity();
   int getPopulationSize();

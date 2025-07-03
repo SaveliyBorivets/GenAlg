@@ -105,5 +105,22 @@ void ExperimentWindow::setupUI() {
 
     gridLayout->addWidget(chartView, 2, 0, 4, 4);
 
+    // ======= АКТИВАЦИЯ КНОПОК ========
+    // Переход к меню ввода
     connect(toInputMenuButton, &QPushButton::clicked, this, &ExperimentWindow::switchToInputMenu);
+
+    // Коннект выпадающих меню
+    connect(comboCrossover, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &ExperimentWindow::crossoverTypeSelected);
+
+    connect(comboMutation, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &ExperimentWindow::mutationTypeSelected);
+
+    connect(comboSelection, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &ExperimentWindow::selectionTypeSelected);
+
+    // Кнопки
+    connect(nextStepButton, &QPushButton::clicked, this, &ExperimentWindow::runOneIteration);
+
+    connect(toEndButton, &QPushButton::clicked, this, &ExperimentWindow::runToTheEnd);
 }

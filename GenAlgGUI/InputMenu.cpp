@@ -40,18 +40,37 @@ void InputMenu::setupUI() {
     guiText->setPlaceholderText("Формат ввода:\n"
                                 "1. Вместимость рюкзака\n"
                                 "2. Размер популяции\n"
-                                "3. Максимальная вместимость рюкзака\n"
-                                "4. Количество предметов\n"
-                                "5. Цены предметов через пробел\n"
-                                "6. Веса предметов через пробел\n");
+                                "3. Количество предметов\n"
+                                "4. Цены предметов через пробел\n"
+                                "5. Веса предметов через пробел\n");
     guiText->setMaximumHeight(300);
     inputMenuLayout->addWidget(guiText);
 
     statusInputMenu = new QLabel("Статус: ");
     inputMenuLayout->addWidget(statusInputMenu);
+    statusInputMenu->setText("Статус: Необходимы данные");
 
+    // ======= АКТИВАЦИЯ КНОПОК ========
+    // Окно эксперимента
     toExperimentButton = new QPushButton("К эксперименту");
     inputMenuLayout->addWidget(toExperimentButton);
-    connect(toExperimentButton, &QPushButton::clicked,
-            this, &InputMenu::switchToExperiment);
+    connect(toExperimentButton, &QPushButton::clicked, this, &InputMenu::switchToExperiment);
+
+    // Получение пути к txt
+    connect(txtInputButton, &QPushButton::clicked, this, &InputMenu::getDataFromTxt);
+
+    // Получение данных из GUI
+    connect(guiInputButton, &QPushButton::clicked, this, &InputMenu::getDataFromGui);
+}
+
+QString InputMenu::getPath() const {
+    return txtLineEdit->text();
+}
+
+QString InputMenu::getGuiText() const {
+    return guiText->toPlainText();
+}
+
+void InputMenu::setStatus(std::string newStatus) {
+    statusInputMenu->setText(QString::fromStdString("Статус: " + newStatus));
 }

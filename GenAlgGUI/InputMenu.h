@@ -13,9 +13,14 @@ class InputMenu : public QWidget
     Q_OBJECT
 public:
     explicit InputMenu(QWidget *parent = nullptr);
+    QString getPath() const;
+    QString getGuiText() const;
+    void setStatus(std::string newStatus);
 
 signals:
     void switchToExperiment();
+    void getDataFromTxt();
+    void getDataFromGui();
 
 private:
     void setupUI();

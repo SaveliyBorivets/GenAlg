@@ -5,7 +5,6 @@ Backpack::Backpack(std::vector<int> sol) {
 }
 
 Backpack::Backpack(DataManager data) {
-  float totalPrice = 0;
   float totalWeight = 0;
   std::vector<Item> items = data.getItems();
   solution = std::vector<int>(items.size(), 0);
@@ -16,14 +15,14 @@ Backpack::Backpack(DataManager data) {
   }
 }
 
-void Backpack::delItem(int pos, DataManager data) {
+void Backpack::delItem(int pos) {
   if (solution[pos] == 0) {
     return;
   }
   solution[pos] -= 1;
 }
 
-void Backpack::addItem(int pos, DataManager data) {
+void Backpack::addItem(int pos) {
   solution[pos] += 1;
 }
 

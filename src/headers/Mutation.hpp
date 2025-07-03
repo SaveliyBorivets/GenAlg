@@ -12,16 +12,17 @@ enum class MutationType {
     CHANGE      // Обмен
 };
 
-class Mutations {
+class Mutation {
 private:
+    float IsMutation; // Вероятность применения мутации (0.0–1.0)
     MutationType mutation; // Выбранный тип мутации
     std::mt19937 gen;
     void mutateAddOrRemove(Backpack& backpack);
     void mutateChange(Backpack& backpack);
 public:
-    float IsMutation; // Вероятность применения мутации (0.0–1.0)
-    Mutations(float prob, MutationType type);
+    Mutation(float prob, MutationType type);
     void getMutation(Backpack& backpack);
+    void setType(MutationType t);
 };
 
 #endif

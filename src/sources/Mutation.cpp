@@ -1,12 +1,11 @@
 #include "../headers/Mutation.hpp"
 
-Mutations::Mutations(float prob, MutationType type)
-  : IsMutation(prob), mutation(type) {
+Mutation::Mutation(float prob, MutationType type) : IsMutation(prob), mutation(type) {
   std::random_device rd;
   gen.seed(rd());
 }
 
-void Mutations::mutateAddOrRemove(Backpack& backpack) {
+void Mutation::mutateAddOrRemove(Backpack& backpack) {
   std::vector<int> items = backpack.getSolution();
   if (items.empty()) return;
   std::uniform_int_distribution<int> mut(0, 1);
@@ -24,7 +23,7 @@ void Mutations::mutateAddOrRemove(Backpack& backpack) {
   }
 }
 
-void Mutations::mutateChange(Backpack& backpack) {
+void Mutation::mutateChange(Backpack& backpack) {
   std::vector<int> items = backpack.getSolution();
   if (items.size() < 2) return;
   std::uniform_int_distribution<int> ind(0, items.size() - 1);
@@ -37,7 +36,7 @@ void Mutations::mutateChange(Backpack& backpack) {
   backpack.editSolution(index2, items[index1]);
 }
 
-void Mutations::getMutation(Backpack& backpack) {
+void Mutation::getMutation(Backpack& backpack) {
   std::uniform_real_distribution<float> chance(0.0, 1.0);
   if (chance(gen) > IsMutation) return;
   std::vector<int> solution = backpack.getSolution();
@@ -49,4 +48,8 @@ void Mutations::getMutation(Backpack& backpack) {
       mutateChange(backpack);
       break;
   }
+}
+
+void Mutation::setType(MutationType t) {
+  mutation = t;
 }

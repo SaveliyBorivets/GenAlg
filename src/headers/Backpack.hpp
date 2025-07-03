@@ -13,8 +13,8 @@ private:
 public:
   Backpack(std::vector<int> solution);
   Backpack(DataManager data);
-  void delItem(int pos, DataManager data);
-  void addItem(int pos, DataManager data);
+  void delItem(int pos);
+  void addItem(int pos);
   void editSolution(int pos, int amount);
   std::vector<int> getSolution() const;
   // ценность вещей которые можно поместить в рюкзак

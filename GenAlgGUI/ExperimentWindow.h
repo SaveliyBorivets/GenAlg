@@ -16,6 +16,11 @@ public:
 
 signals:
     void switchToInputMenu();
+    void crossoverTypeSelected(int index);
+    void mutationTypeSelected(int index);
+    void selectionTypeSelected(int index);
+    void runOneIteration();
+    void runToTheEnd();
 
 private:
     void setupUI();

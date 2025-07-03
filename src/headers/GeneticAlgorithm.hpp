@@ -25,7 +25,7 @@ private:
     std::vector<Backpack> population; // Популяция
     std::vector<float> fitnesses; // Пригодности
     Crossover crossover; // Класс скрещивания
-    Mutations mutation; // Класс мутаций
+    Mutation mutation; // Класс мутаций
     SelectionType selectionMethod; // Метод отбора
     std::vector<float> averageFitnessHistory; // Средняя пригодность по поколениям
     std::vector<float> bestFitnessHistory; // Лучшая пригодность по поколениям
@@ -48,6 +48,11 @@ public:
 
     void runGeneration();
     void run();
+
+    // Сеттеры
+    void setCrossoverType(CrossoverType t);
+    void setMutationType(MutationType t);
+    void setSelectionType(SelectionType t);
 };
 
 #endif

@@ -160,3 +160,15 @@ void GeneticAlgorithm::run() {
     std::cout << "Прогресс среднего: " << averageFitnessHistory.back() - averageFitnessHistory[0]
         << " Прогрес лучшего: " << bestFitnessHistory.back() - bestFitnessHistory[0] << std::endl;
 }
+
+void GeneticAlgorithm::setCrossoverType(CrossoverType t) {
+  crossover.setType(t);
+}
+
+void GeneticAlgorithm::setMutationType(MutationType t) {
+    mutation.setType(t);
+}
+
+void GeneticAlgorithm::setSelectionType(SelectionType t) {
+    selectionMethod = t;
+}

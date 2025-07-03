@@ -9,10 +9,20 @@ CONFIG += c++17 cmdline
 
 SOURCES += main.cpp \
            InputMenu.cpp \
-           ExperimentWindow.cpp
+           ExperimentWindow.cpp \
+           ../src/sources/DataManager.cpp \
+           ../src/sources/GeneticAlgorithm.cpp \
+           ../src/sources/Backpack.cpp \
+           ../src/sources/Crossover.cpp \
+           ../src/sources/Mutation.cpp
 
 HEADERS += InputMenu.h \
-            ExperimentWindow.h
+            ExperimentWindow.h \
+            ../src/headers/DataManager.hpp \
+            ../src/headers/GeneticAlgorithm.hpp \
+            ../src/headers/Backpack.hpp \
+            ../src/headers/Crossover.hpp \
+            ../src/headers/Mutation.hpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

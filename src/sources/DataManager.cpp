@@ -43,10 +43,12 @@ int DataManager::randomTake(float upBoard) {
   return dist(gen);
 }
 
-void DataManager::loadFile(std::string path) {
+std::string DataManager::loadFile(std::string path) {
+  if (path.empty()) return "Введите путь до txt файла";
+
   std::ifstream file(path);
   if (!file.is_open()) {
-    throw std::runtime_error("Ошибка открытия файла: " + path);
+    return "Ошибка: Файл " + path + " не получилось открыть";
   }
 
   std::string fileText(
@@ -54,26 +56,30 @@ void DataManager::loadFile(std::string path) {
       std::istreambuf_iterator<char>()
   );
 
-  stringParse(fileText);
+  std::string parseStatus = stringParse(fileText);
 
   file.close();
+
+  return parseStatus;
 }
 
-void DataManager::stringParse(std::string input) {
+std::string DataManager::stringParse(std::string input) {
+  if (input.empty()) return "Пустой файл/окно ввода";
+
   std::istringstream iss(input);
 
   int itemsNum;
   iss >> maxCapacity >> populationSize >> itemsNum;
 
   if (iss.fail()) {
-    throw std::runtime_error("Ошибка чтения основных параметров");
+    return "Ошибка: Основные параметры не прочитаны";
   }
 
   // Цены
   std::vector<double> prices(itemsNum);
   for (int i = 0; i < itemsNum; ++i) {
     if (!(iss >> prices[i])) {
-      throw std::runtime_error("Ошибка чтения цен предметов");
+      return "Ошибка: Некорректные цены";
     }
   }
 
@@ -81,7 +87,7 @@ void DataManager::stringParse(std::string input) {
   std::vector<double> weights(itemsNum);
   for (int i = 0; i < itemsNum; ++i) {
     if (!(iss >> weights[i])) {
-      throw std::runtime_error("Ошибка чтения весов предметов");
+      return "Ошибка: Некорректные веса";
     }
   }
 
@@ -90,7 +96,7 @@ void DataManager::stringParse(std::string input) {
     std::string remaining;
     std::getline(iss, remaining);
     if (!remaining.empty()) {
-      std::cerr << "Предупреждение: лишние данные в конце строки: " << remaining << std::endl;
+      return "Предупреждение: лишние данные в конце строки: " + remaining;
     }
   }
 
@@ -98,6 +104,8 @@ void DataManager::stringParse(std::string input) {
   for (int i = 0; i < itemsNum; ++i) {
     add(prices[i], weights[i]);
   }
+
+  return "Данные успешно считаны";
 }
 
 std::vector<Item> DataManager::getItems() {
