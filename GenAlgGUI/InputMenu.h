@@ -21,6 +21,7 @@ signals:
     void switchToExperiment();
     void getDataFromTxt();
     void getDataFromGui();
+    void generateRandomDataManager();
 
 private:
     void setupUI();

@@ -61,6 +61,9 @@ void InputMenu::setupUI() {
 
     // Получение данных из GUI
     connect(guiInputButton, &QPushButton::clicked, this, &InputMenu::getDataFromGui);
+
+    // Случайная генерация
+    connect(randomButton, &QPushButton::clicked, this, &InputMenu::generateRandomDataManager);
 }
 
 QString InputMenu::getPath() const {

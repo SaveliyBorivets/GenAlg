@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
         QString qPath = inputMenu->getPath();
         std::string path = qPath.toStdString();
         inputMenu->setStatus(dataManager->loadFile(path));
+        delete geneticAlgorithm;
         geneticAlgorithm = new GeneticAlgorithm(*dataManager);
     });
 
@@ -52,10 +53,28 @@ int main(int argc, char *argv[]) {
         QString qGuiData = inputMenu->getGuiText();
         std::string guiData = qGuiData.toStdString();
         inputMenu->setStatus(dataManager->stringParse(guiData));
+        delete geneticAlgorithm;
+        geneticAlgorithm = new GeneticAlgorithm(*dataManager);
+    });
+
+    QObject::connect(inputMenu, &InputMenu::generateRandomDataManager, [&]() mutable {
+        dataManager->randomLoad();
+        inputMenu->setStatus("Случайные данные сгенерированы");
+        delete geneticAlgorithm;
         geneticAlgorithm = new GeneticAlgorithm(*dataManager);
     });
 
     // === ОКНО ЭКСПЕРИМЕНТА ===
+
+    QObject::connect(experimentWindow, &ExperimentWindow::fitnessTypeSelected,
+        [&](int index) {
+            switch(index) {
+                case 0: dataManager->setFitness(FitnessType::Cutting); break;
+                case 1: dataManager->setFitness(FitnessType::Gentle); break;
+            }
+            experimentWindow->statusUpdate("Смена функции пригодности");
+    });
+
 
     QObject::connect(experimentWindow, &ExperimentWindow::crossoverTypeSelected,
             [&](int index) {
@@ -64,6 +83,7 @@ int main(int argc, char *argv[]) {
                     case 1: geneticAlgorithm->setCrossoverType(CrossoverType::TwoPoint); break;
                     case 2: geneticAlgorithm->setCrossoverType(CrossoverType::Uniform); break;
                 }
+                experimentWindow->statusUpdate("Смена скрещивания");
     });
 
     QObject::connect(experimentWindow, &ExperimentWindow::mutationTypeSelected,
@@ -72,6 +92,7 @@ int main(int argc, char *argv[]) {
                 case 0: geneticAlgorithm->setMutationType(MutationType::ADD_REMOVE); break;
                 case 1: geneticAlgorithm->setMutationType(MutationType::CHANGE); break;
             }
+            experimentWindow->statusUpdate("Смена мутации");
     });
 
     QObject::connect(experimentWindow, &ExperimentWindow::selectionTypeSelected,
@@ -80,16 +101,21 @@ int main(int argc, char *argv[]) {
                 case 0: geneticAlgorithm->setSelectionType(SelectionType::Tournament); break;
                 case 1: geneticAlgorithm->setSelectionType(SelectionType::Roulette); break;
             }
+            experimentWindow->statusUpdate("Смена метода отбора");
     });
 
     // Кнопки
     QObject::connect(experimentWindow, &ExperimentWindow::runOneIteration, [&]() {
         geneticAlgorithm->runGeneration();
+        experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
+        experimentWindow->labelsUpdate(geneticAlgorithm->getBestCostOfAllTime(), geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
     });
 
     // Запуск алгоритма
     QObject::connect(experimentWindow, &ExperimentWindow::runToTheEnd, [&]() {
         geneticAlgorithm->run();
+        experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
+        experimentWindow->labelsUpdate(geneticAlgorithm->getBestCostOfAllTime(), geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
     });
 
     return app.exec();

@@ -6,7 +6,7 @@ GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(1, 
     gen.seed(rd());
     selectionMethod = SelectionType::Tournament;
     generationCount = 0;
-    // maxGenerations = 50;
+    bestCostOfAllTime = 0;
     for (int i = 0; i < Data.getPopulationSize(); ++i) {
         Backpack randomBackpack(data);
         population.emplace_back(randomBackpack);
@@ -102,6 +102,9 @@ float GeneticAlgorithm::BestFitness() {
     float best = 0;
     for (auto& b : population)
         best = std::max(best, b.getFitnessValue(Data.getFitness(), Data));
+    if (best > bestCostOfAllTime) {
+      bestCostOfAllTime = best;
+    }
     return best;
 }
 
@@ -118,6 +121,10 @@ std::vector<float> GeneticAlgorithm::getAverageFitness() {
 // Передача лучшей приспособленности
 std::vector<float> GeneticAlgorithm::getBestFitness() {
     return bestFitnessHistory;
+}
+
+float GeneticAlgorithm::getBestCostOfAllTime() {
+    return bestCostOfAllTime;
 }
 
 //Алгоритм
@@ -157,7 +164,7 @@ void GeneticAlgorithm::run() {
     int count = 0;
     float previousFitness;
     runGeneration(); 
-    while (count != 15) {
+    while (count != 50) {
         previousFitness = bestFitnessHistory.back();
         runGeneration(); 
         if (previousFitness == bestFitnessHistory.back()) {
@@ -170,12 +177,15 @@ void GeneticAlgorithm::run() {
         << " Прогрес лучшего: " << bestFitnessHistory.back() - bestFitnessHistory[0] << std::endl;
 }
 
-std::vector<float> GeneticAlgorithm::getAverageFitnessHistory() {
-    return averageFitnessHistory;
-}
-
-std::vector<float> GeneticAlgorithm::getBestFitnessHistory() {
-    return bestFitnessHistory;
+void GeneticAlgorithm::restart(DataManager data) {
+    fitnesses.clear();
+    averageFitnessHistory.clear();
+    bestFitnessHistory.clear();
+    generationCount = 0;
+    for (int i = 0; i < Data.getPopulationSize(); ++i) {
+        Backpack randomBackpack(data);
+        population.emplace_back(randomBackpack);
+    }
 }
 
 void GeneticAlgorithm::setCrossoverType(CrossoverType t) {

@@ -83,19 +83,14 @@ void ExperimentWindow::setupUI() {
     labelAverageCost->setFixedHeight(30);
     gridLayout->addWidget(labelAverageCost, 8, 0, 1, 5);
 
-    // Пример графика
-    QVector<double> xData = {1, 2, 3, 4, 5};    // Ось X
-    QVector<double> yData = {2, 4, 1, 6, 3};    // Ось Y
-
-    // 2. Создаем серию данных
-    QLineSeries *series = new QLineSeries();
-    for (int i = 0; i < xData.size(); ++i) {
-        series->append(xData[i], yData[i]);
-    }
+    // Статус
+    statusExperimentWindow = new QLabel("Статус: ");
+    statusExperimentWindow->setFixedHeight(30);
+    gridLayout->addWidget(statusExperimentWindow, 9, 0, 1, 5);
+    statusExperimentWindow->setText("Статус: Выберите параметры, нажмите на кнопки итераций для отображения графиков");
 
     // 3. Создаем график и добавляем серию
     QChart *chart = new QChart();
-    chart->addSeries(series);
     chart->createDefaultAxes();
     chart->setTitle("График по массивам данных");
 
@@ -110,6 +105,9 @@ void ExperimentWindow::setupUI() {
     connect(toInputMenuButton, &QPushButton::clicked, this, &ExperimentWindow::switchToInputMenu);
 
     // Коннект выпадающих меню
+    connect(comboFitnessFunction, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &ExperimentWindow::fitnessTypeSelected);
+
     connect(comboCrossover, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &ExperimentWindow::crossoverTypeSelected);
 
@@ -123,4 +121,106 @@ void ExperimentWindow::setupUI() {
     connect(nextStepButton, &QPushButton::clicked, this, &ExperimentWindow::runOneIteration);
 
     connect(toEndButton, &QPushButton::clicked, this, &ExperimentWindow::runToTheEnd);
+}
+
+void ExperimentWindow::chartViewUpdate(std::vector<float> bestFitness, std::vector<float> averageFitness)
+{
+    delete chart;
+    chart = new QChart();
+    chart->createDefaultAxes();
+    chart->setTitle("График по массивам данных");
+
+    delete chartView;
+    chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setMinimumHeight(500);
+
+    gridLayout->addWidget(chartView, 2, 0, 4, 4);
+
+    // Проверка инициализации
+    if (!chart || !chartView) {
+        qCritical() << "Chart not initialized!";
+        return;
+    }
+
+    // Проверка входных данных
+    if (bestFitness.empty() || averageFitness.empty() || bestFitness.size() != averageFitness.size()) {
+        qWarning() << "Invalid input data sizes";
+        return;
+    }
+
+    // Подготовка данных
+    QVector<double> xData;
+    for (size_t i = 0; i < bestFitness.size(); i++) {
+        xData.push_back(i);
+    }
+
+    // Создание серий
+    QLineSeries *bestSeries = new QLineSeries();
+    bestSeries->setName("Лучшая приспособленность");
+
+    QLineSeries *avgSeries = new QLineSeries();
+    avgSeries->setName("Средняя приспособленность");
+
+    // Заполнение данными
+    for (int i = 0; i < xData.size(); ++i) {
+        bestSeries->append(xData[i], bestFitness[i]);
+        avgSeries->append(xData[i], averageFitness[i]);
+    }
+
+    // Очистка предыдущих данных
+    chart->removeAllSeries();
+
+    // Добавление серий
+    chart->addSeries(bestSeries);
+    chart->addSeries(avgSeries);
+
+    // Настройка осей (если они еще не созданы)
+    if (!chart->axisX()) {
+        QValueAxis *axisX = new QValueAxis();
+        axisX->setTitleText("Поколение");
+        chart->addAxis(axisX, Qt::AlignBottom);
+
+        QValueAxis *axisY = new QValueAxis();
+        axisY->setTitleText("Приспособленность");
+        chart->addAxis(axisY, Qt::AlignLeft);
+    }
+
+    // Привязка серий к осям
+    bestSeries->attachAxis(chart->axisX());
+    bestSeries->attachAxis(chart->axisY());
+    avgSeries->attachAxis(chart->axisX());
+    avgSeries->attachAxis(chart->axisY());
+
+    // Автомасштабирование
+    chart->axisX()->setRange(0, xData.size()-1);
+
+    double minY = qMin(*std::min_element(bestFitness.begin(), bestFitness.end()),
+           *std::min_element(averageFitness.begin(), averageFitness.end()));
+    double maxY = qMax(*std::max_element(bestFitness.begin(), bestFitness.end()),
+           *std::max_element(averageFitness.begin(), averageFitness.end()));
+
+    chart->axisY()->setRange(minY * 0.95, maxY * 1.05);
+
+    // Обновление отображения
+    chartView->repaint();
+}
+
+void ExperimentWindow::labelsUpdate(float bestFitness, std::vector<float> currentBestFitness, std::vector<float> currentAverageFitness) {
+    labelBestSolution->setText(QString::fromStdString("Наилучшее решение за эксперимент: " + std::to_string(bestFitness)));
+
+    float best = 0, average = 0;
+    if (!currentBestFitness.empty()) {
+        best = currentBestFitness[currentBestFitness.size() - 1];
+    }
+    if (!currentAverageFitness.empty()) {
+        average = currentAverageFitness[currentAverageFitness.size() - 1];
+    }
+    labelBestSolutionCost->setText(QString::fromStdString("Лучшее решение в текущей популяции: " + std::to_string(best)));
+    labelAverageCost->setText(QString::fromStdString("Среднее текущей популяции: " + std::to_string(average)));
+    statusExperimentWindow->setText(QString::fromStdString("Статус: Результаты обновлены"));
+}
+
+void ExperimentWindow::statusUpdate(std::string newStatus) {
+    statusExperimentWindow->setText(QString::fromStdString("Статус: " + newStatus));
 }

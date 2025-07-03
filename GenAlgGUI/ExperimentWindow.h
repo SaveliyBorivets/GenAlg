@@ -13,9 +13,13 @@ class ExperimentWindow : public QWidget
     Q_OBJECT
 public:
     explicit ExperimentWindow(QWidget *parent = nullptr);
+    void chartViewUpdate(std::vector<float> bestFitness, std::vector<float> averageFitness);
+    void labelsUpdate(float BestFitness, std::vector<float> currentBestFitness, std::vector<float> currentAverageFitness);
+    void statusUpdate(std::string newStatus);
 
 signals:
     void switchToInputMenu();
+    void fitnessTypeSelected(int index);
     void crossoverTypeSelected(int index);
     void mutationTypeSelected(int index);
     void selectionTypeSelected(int index);
@@ -43,8 +47,10 @@ private:
     QLabel* labelBestSolution;
     QLabel* labelBestSolutionCost;
     QLabel* labelAverageCost;
+    QLabel* statusExperimentWindow;
 
     // График
+    QChart* chart;
     QChartView* chartView;
 };
 

@@ -29,8 +29,8 @@ private:
     SelectionType selectionMethod; // Метод отбора
     std::vector<float> averageFitnessHistory; // Средняя пригодность по поколениям
     std::vector<float> bestFitnessHistory; // Лучшая пригодность по поколениям
+    float bestCostOfAllTime;
     int generationCount = 0; // Счётчик поколений
-    // int maxGenerations; // Критерий остановки
 
     std::pair<Backpack, Backpack> selectParents();
     void evaluateFitness();
@@ -45,9 +45,11 @@ public:
     int getGenCount();
     std::vector<float> getAverageFitness();
     std::vector<float> getBestFitness();
+    float getBestCostOfAllTime();
 
     void runGeneration();
     void run();
+    void restart(DataManager data);
     
     // Сеттеры
     void setCrossoverType(CrossoverType t);
