@@ -13,7 +13,7 @@ void ExperimentWindow::setupUI() {
 
     // Настройка отступов и интервалов
     gridLayout->setSpacing(0);  // Расстояние между ячейками
-    gridLayout->setContentsMargins(15, 15, 15, 15);  // Отступы от краев
+//    gridLayout->setContentsMargins(15, 15, 15, 15);  // Отступы от краев
 
     // Функция пригодности
     QLabel* labelFitnessFunction = new QLabel(QString("Функция пригодности"));
@@ -49,7 +49,7 @@ void ExperimentWindow::setupUI() {
 
     // === Кнопки ===
     // Вывод популяции
-    printPopulationButton = new QPushButton("Популяция в txt-файл");
+    printPopulationButton = new QPushButton("Дополнительная информация");
     printPopulationButton->setFixedSize(200, 70);
     gridLayout->addWidget(printPopulationButton, 2, 4);
 
@@ -84,20 +84,17 @@ void ExperimentWindow::setupUI() {
     gridLayout->addWidget(labelAverageCost, 8, 0, 1, 5);
 
     // Статус
-    statusExperimentWindow = new QLabel("Статус: ");
+    statusExperimentWindow = new QLabel("Статус: Выберите параметры, нажмите на кнопки итераций для отображения графиков");
     statusExperimentWindow->setFixedHeight(30);
     gridLayout->addWidget(statusExperimentWindow, 9, 0, 1, 5);
-    statusExperimentWindow->setText("Статус: Выберите параметры, нажмите на кнопки итераций для отображения графиков");
 
-    // 3. Создаем график и добавляем серию
-    QChart *chart = new QChart();
-    chart->createDefaultAxes();
-    chart->setTitle("График по массивам данных");
+    informationText = new QTextEdit(this);
+    informationText->setText("Необходимо ввести данные");
+    gridLayout->addWidget(informationText, 10, 0, 1, 5);
 
+    // График
+    chart = new QChart();
     chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setMinimumHeight(500);
-
     gridLayout->addWidget(chartView, 2, 0, 4, 4);
 
     // ======= АКТИВАЦИЯ КНОПОК ========
@@ -118,6 +115,8 @@ void ExperimentWindow::setupUI() {
         this, &ExperimentWindow::selectionTypeSelected);
 
     // Кнопки
+//    connect(printPopulationButton, &QPushButton::clicked, this, &ExperimentWindow::displayInformation);
+
     connect(nextStepButton, &QPushButton::clicked, this, &ExperimentWindow::runOneIteration);
 
     connect(toEndButton, &QPushButton::clicked, this, &ExperimentWindow::runToTheEnd);
@@ -223,4 +222,10 @@ void ExperimentWindow::labelsUpdate(float bestFitness, std::vector<float> curren
 
 void ExperimentWindow::statusUpdate(std::string newStatus) {
     statusExperimentWindow->setText(QString::fromStdString("Статус: " + newStatus));
+}
+
+#include <iostream>
+
+void ExperimentWindow::displayInfo(std::string dataManagerInfo, std::string genAlgInfo, std::string populationInfo) {
+    informationText->setText(QString::fromStdString("Данные задачи\n" + dataManagerInfo + "\nТекущие настройки\n" + genAlgInfo + "\nПопуляция\n" + populationInfo));
 }

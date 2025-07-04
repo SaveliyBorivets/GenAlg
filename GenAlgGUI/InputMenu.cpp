@@ -1,12 +1,6 @@
 #include "InputMenu.h"
 
 InputMenu::InputMenu(QWidget *parent) : QWidget(parent) {
-    // ===== ОКНО ВВОДА =====
-
-    // Размеры
-    setMinimumHeight(720);
-    setMinimumWidth(1280);
-
     setupUI();
 }
 

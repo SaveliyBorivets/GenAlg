@@ -95,6 +95,9 @@ std::string DataManager::stringParse(std::string input) {
     return "Ошибка: Основные параметры не прочитаны";
   }
 
+  if (populationSize < 20) {
+    populationSize = 20;
+  }
   // Цены
   std::vector<double> prices(itemsNum);
   for (int i = 0; i < itemsNum; ++i) {

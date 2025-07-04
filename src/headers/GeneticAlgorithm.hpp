@@ -42,7 +42,7 @@ private:
 public:
     GeneticAlgorithm(DataManager data);
 
-    std::string getCeurrentPopulation();
+    std::string getCurrentPopulation();
     std::string getInfo();
     int getGenCount();
     std::vector<float> getAverageFitness();

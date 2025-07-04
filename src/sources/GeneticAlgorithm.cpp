@@ -108,7 +108,7 @@ float GeneticAlgorithm::BestFitness() {
     return best;
 }
 
-std::string GeneticAlgorithm::getCeurrentPopulation() {
+std::string GeneticAlgorithm::getCurrentPopulation() {
     std::string info;
     int n = population.size(), m = Data.getItems().size();
     for (int i = 0; i < n; ++i) {

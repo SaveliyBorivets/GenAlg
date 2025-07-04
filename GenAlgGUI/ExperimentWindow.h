@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QPushButton>
 #include <QChartView>
+#include <QTextEdit>
 
 class ExperimentWindow : public QWidget
 {
@@ -16,6 +17,7 @@ public:
     void chartViewUpdate(std::vector<float> bestFitness, std::vector<float> averageFitness);
     void labelsUpdate(float BestFitness, std::vector<float> currentBestFitness, std::vector<float> currentAverageFitness);
     void statusUpdate(std::string newStatus);
+    void displayInfo(std::string dataManagerInfo, std::string genAlgInfo, std::string populationInfo);
 
 signals:
     void switchToInputMenu();
@@ -48,6 +50,7 @@ private:
     QLabel* labelBestSolutionCost;
     QLabel* labelAverageCost;
     QLabel* statusExperimentWindow;
+    QTextEdit* informationText;
 
     // График
     QChart* chart;
