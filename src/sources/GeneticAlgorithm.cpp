@@ -125,7 +125,6 @@ Backpack GeneticAlgorithm::rewriteSolution(Backpack backpack){
 }
 
 Backpack GeneticAlgorithm::getBestOfAllIndivids() {
-    float weight = 0;
     if (Data.getFitness() == FitnessType::Gentle) {
         bestOfAllIndivids = rewriteSolution(bestOfAllIndivids);
     }
@@ -133,7 +132,12 @@ Backpack GeneticAlgorithm::getBestOfAllIndivids() {
 }
 
 std::vector<Backpack> GeneticAlgorithm::getBestIndivids() {
-
+    if (Data.getFitness() == FitnessType::Gentle) {
+        for (int i = 0; i < bestIndivids.size(); ++i) {
+            bestIndivids[i] = rewriteSolution(bestIndivids[i]);
+        }
+    }
+    return bestIndivids;
 }
 
 std::string GeneticAlgorithm::getCurrentPopulation() {
