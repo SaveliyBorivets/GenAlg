@@ -70,8 +70,9 @@ float Backpack::getFitnessValue2(DataManager data) const {
   return totalVal;
 }
 
-// void Backpack::printBackpack() {
-//   for (size_t i = 0; i < solution; ++i) {
-
-//   }
-// }
+void Backpack::printBackpack() {
+  for (size_t i = 0; i < solution.size(); ++i) {
+    std::cout << solution[i] << ' ';
+  }
+  std::cout << std::endl;
+}

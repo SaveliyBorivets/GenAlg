@@ -10,7 +10,8 @@ int main() {
   std::cout << dm.getInfo();
   GeneticAlgorithm go(dm);
   std::cout << go.getInfo();
-  std::cout << go.getCeurrentPopulation();
+  std::cout << go.getCurrentPopulation();
+  go.getBestOfAllIndivids().printBackpack();
   // go.run();
 //   Backpack backpack(dm);
 //   for (size_t i = 0; i < backpack.getSolution().size(); i++) {
