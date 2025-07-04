@@ -98,14 +98,46 @@ float GeneticAlgorithm::AverageFitness() {
 }
 
 // Получение лучшей приспособленности
-float GeneticAlgorithm::BestFitness() {
-    float best = 0;
+Backpack GeneticAlgorithm::BestFitness() {
+    Backpack best(std::vector<int>(Data.getItems().size(), 0));
+    float fit = 0;
     for (auto& b : population)
-        best = std::max(best, b.getFitnessValue(Data.getFitness(), Data));
-    if (best > bestCostOfAllTime) {
-      bestCostOfAllTime = best;
+        if (best.getFitnessValue(Data.getFitness(), Data) < b.getFitnessValue(Data.getFitness(), Data)) {
+            best = b;
+        }
+    if (best.getFitnessValue(Data.getFitness(), Data) > bestCostOfAllTime) {
+      bestCostOfAllTime = best.getFitnessValue(Data.getFitness(), Data);
+      bestOfAllIndivids = best;
     }
     return best;
+}
+
+Backpack GeneticAlgorithm::rewriteSolution(Backpack backpack){
+    float weight = 0;
+    for (int i = 0; i < Data.getItems().size(); ++i) {
+        if (weight + Data.getItems()[i].weight * backpack.getSolution()[i] > Data.getMaxCapacity()) {
+            backpack.editSolution(i, 0);
+        } else {
+            weight += Data.getItems()[i].weight * backpack.getSolution()[i];
+        }
+    }
+    return backpack;
+}
+
+Backpack GeneticAlgorithm::getBestOfAllIndivids() {
+    if (Data.getFitness() == FitnessType::Gentle) {
+        bestOfAllIndivids = rewriteSolution(bestOfAllIndivids);
+    }
+    return bestOfAllIndivids;
+}
+
+std::vector<Backpack> GeneticAlgorithm::getBestIndivids() {
+    if (Data.getFitness() == FitnessType::Gentle) {
+        for (int i = 0; i < bestIndivids.size(); ++i) {
+            bestIndivids[i] = rewriteSolution(bestIndivids[i]);
+        }
+    }
+    return bestIndivids;
 }
 
 std::string GeneticAlgorithm::getCurrentPopulation() {
@@ -186,7 +218,9 @@ void GeneticAlgorithm::runGeneration() {
     // Считаем приспособленность
     evaluateFitness();
     averageFitnessHistory.push_back(AverageFitness());
-    bestFitnessHistory.push_back(BestFitness());
+    Backpack best = BestFitness();
+    bestFitnessHistory.push_back(best.getFitnessValue(Data.getFitness(), Data));
+    bestIndivids.push_back(best);
 
     // Новое поколение
     std::vector<Backpack> newPopulation;

@@ -22,6 +22,8 @@ class GeneticAlgorithm {
 private:
     std::mt19937 gen;
     DataManager Data;
+    Backpack bestOfAllIndivids = Backpack(std::vector<int>(Data.getItems().size(), 0));
+    std::vector<Backpack> bestIndivids;
     std::vector<Backpack> population; // Популяция
     std::vector<float> fitnesses; // Пригодности
     Crossover crossover; // Класс скрещивания
@@ -36,12 +38,15 @@ private:
     void evaluateFitness();
     Backpack tournamentSelection();
     Backpack rouletteSelection();
+    Backpack rewriteSolution(Backpack backpack);
     float AverageFitness();
-    float BestFitness();
+    Backpack BestFitness();
 
 public:
     GeneticAlgorithm(DataManager data);
 
+    Backpack getBestOfAllIndivids();
+    std::vector<Backpack> getBestIndivids();
     std::string getCurrentPopulation();
     std::string getInfo();
     int getGenCount();
