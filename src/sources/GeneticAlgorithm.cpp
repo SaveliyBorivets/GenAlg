@@ -287,3 +287,7 @@ void GeneticAlgorithm::setMutationType(MutationType t) {
 void GeneticAlgorithm::setSelectionType(SelectionType t) {
     selectionMethod = t;
 }
+
+int GeneticAlgorithm::getGenerationCount() {
+    return generationCount;
+}

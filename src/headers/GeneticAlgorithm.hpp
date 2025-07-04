@@ -45,6 +45,7 @@ private:
 public:
     GeneticAlgorithm(DataManager data);
 
+    int getGenerationCount();
     Backpack getBestOfAllIndivids();
     std::vector<Backpack> getBestIndivids();
     std::string getCurrentPopulation();

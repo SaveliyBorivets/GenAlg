@@ -92,6 +92,15 @@ void ExperimentWindow::setupUI() {
     informationText->setText("Необходимо ввести данные");
     gridLayout->addWidget(informationText, 10, 0, 1, 5);
 
+//    std::vector<float> prices = {0f, 22.3f, 18.0f, 9.9f};
+//    std::vector<float> weights = {1.1f, 2.4f, 1.7f, 0.8f};
+//    std::vector<int> best_solution = {1, 0, 1, 0};
+//    std::vector<int> current_best = {1, 0, 0, 1};
+
+    table = new QTableWidget(this);
+//    createTable(prices, weights, best_solution, current_best);
+    gridLayout->addWidget(table, 11, 0, 1, 5);
+
     // График
     chart = new QChart();
     chartView = new QChartView(chart);
@@ -218,6 +227,90 @@ void ExperimentWindow::labelsUpdate(float bestFitness, std::vector<float> curren
     labelBestSolutionCost->setText(QString::fromStdString("Лучшее решение в текущей популяции: " + std::to_string(best)));
     labelAverageCost->setText(QString::fromStdString("Среднее текущей популяции: " + std::to_string(average)));
     statusExperimentWindow->setText(QString::fromStdString("Статус: Результаты обновлены"));
+}
+
+void ExperimentWindow::createTable(std::vector<Item> items,
+                                 Backpack best_solution,
+                                 std::vector<Backpack> bestSolutions) {
+    // Подготовка данных
+    std::vector<float> prices, weights;
+    for (const auto& item : items) {
+        prices.push_back(item.price);
+        weights.push_back(item.weight);
+    }
+
+    const size_t n = prices.size();
+    if (n == 0 || weights.size() != n) {
+        qWarning("Векторы items не должны быть пустыми!");
+        return;
+    }
+
+    // Очищаем таблицу
+    table->clear();
+
+    // Устанавливаем размеры (4 строки + строки для решений, n столбцов)
+    int row_count = 4 + static_cast<int>(bestSolutions.size());
+    table->setRowCount(row_count);
+    table->setColumnCount(static_cast<int>(n));
+
+    // Устанавливаем заголовки строк
+    QStringList row_labels;
+    row_labels << "Цены" << "Веса" << "Наилучшее решение" << "Текущее лучшее";
+
+    // Добавляем заголовки для каждого решения
+    for (size_t i = 0; i < bestSolutions.size(); ++i) {
+        row_labels << QString("Лучшее в %1").arg(i+1);
+    }
+    table->setVerticalHeaderLabels(row_labels);
+
+    // Получаем наилучшее решение
+    std::vector<int> best_solution_vec = best_solution.getSolution();
+
+    // Заполняем основные данные
+    for (size_t col = 0; col < n; ++col) {
+        // Цены
+        QTableWidgetItem* price_item = new QTableWidgetItem(QString::number(prices[col]));
+        table->setItem(0, static_cast<int>(col), price_item);
+
+        // Веса
+        QTableWidgetItem* weight_item = new QTableWidgetItem(QString::number(weights[col]));
+        table->setItem(1, static_cast<int>(col), weight_item);
+
+        // Наилучшее решение (всегда зеленое)
+        QTableWidgetItem* best_item = new QTableWidgetItem(QString::number(best_solution_vec[col]));
+        best_item->setBackground(Qt::green);
+        table->setItem(2, static_cast<int>(col), best_item);
+    }
+
+    // Заполняем решения и сравниваем с наилучшим
+    for (size_t row = 0; row < bestSolutions.size(); ++row) {
+        std::vector<int> current_solution = bestSolutions[row].getSolution();
+
+        for (size_t col = 0; col < n; ++col) {
+            QTableWidgetItem* solution_item = new QTableWidgetItem(
+                QString::number(current_solution[col]));
+
+            // Сравниваем с наилучшим решением
+            bool is_best = (current_solution[col] == best_solution_vec[col]);
+            solution_item->setBackground(is_best ? Qt::green : Qt::white);
+
+            table->setItem(static_cast<int>(row + 3), static_cast<int>(col), solution_item);
+        }
+    }
+
+    table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);  // Плавная прокрутка
+    table->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);  // Фиксируем высоту строк
+
+    table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    // Настройка отображения
+    table->resizeColumnsToContents();
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void ExperimentWindow::statusUpdate(std::string newStatus) {

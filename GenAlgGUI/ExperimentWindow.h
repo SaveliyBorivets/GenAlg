@@ -9,6 +9,13 @@
 #include <QChartView>
 #include <QTextEdit>
 
+// Для таблицы
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QColor>
+#include "../src/headers/Item.hpp"
+#include "../src/headers/Backpack.hpp"
+
 class ExperimentWindow : public QWidget
 {
     Q_OBJECT
@@ -18,6 +25,7 @@ public:
     void labelsUpdate(float BestFitness, std::vector<float> currentBestFitness, std::vector<float> currentAverageFitness);
     void statusUpdate(std::string newStatus);
     void displayInfo(std::string dataManagerInfo, std::string genAlgInfo, std::string populationInfo);
+    void createTable(std::vector<Item> items, Backpack best_solution, std::vector<Backpack> bestSolutions); // Визуализация решения
 
 signals:
     void switchToInputMenu();
@@ -55,6 +63,8 @@ private:
     // График
     QChart* chart;
     QChartView* chartView;
+
+    QTableWidget* table;
 };
 
 #endif // EXPERIMENTWINDOW_H

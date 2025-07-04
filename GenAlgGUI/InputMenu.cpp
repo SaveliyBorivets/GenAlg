@@ -44,6 +44,10 @@ void InputMenu::setupUI() {
     inputMenuLayout->addWidget(statusInputMenu);
     statusInputMenu->setText("Статус: Необходимы данные");
 
+    informationText = new QTextEdit();
+    informationText->setText("Необходимо ввести данные");
+    inputMenuLayout->addWidget(informationText);
+
     // ======= АКТИВАЦИЯ КНОПОК ========
     // Окно эксперимента
     toExperimentButton = new QPushButton("К эксперименту");
@@ -70,4 +74,8 @@ QString InputMenu::getGuiText() const {
 
 void InputMenu::setStatus(std::string newStatus) {
     statusInputMenu->setText(QString::fromStdString("Статус: " + newStatus));
+}
+
+void InputMenu::displayInfo(std::string dataManagerInfo) {
+    informationText->setText(QString::fromStdString("Данные задачи\n" + dataManagerInfo));
 }

@@ -51,7 +51,9 @@ int main(int argc, char *argv[]) {
         inputMenu->setStatus(dataManager->loadFile(path));
         delete geneticAlgorithm;
         geneticAlgorithm = new GeneticAlgorithm(*dataManager);
+        inputMenu->displayInfo(dataManager->getInfo());
         experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
     });
 
     QObject::connect(inputMenu, &InputMenu::getDataFromGui, [&]() mutable {
@@ -62,7 +64,8 @@ int main(int argc, char *argv[]) {
         inputMenu->setStatus(dataManager->stringParse(guiData));
         delete geneticAlgorithm;
         geneticAlgorithm = new GeneticAlgorithm(*dataManager);
-        experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        inputMenu->displayInfo(dataManager->getInfo());
+        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
     });
 
     QObject::connect(inputMenu, &InputMenu::generateRandomDataManager, [&]() mutable {
@@ -72,7 +75,9 @@ int main(int argc, char *argv[]) {
         inputMenu->setStatus("Случайные данные сгенерированы");
         delete geneticAlgorithm;
         geneticAlgorithm = new GeneticAlgorithm(*dataManager);
+        inputMenu->displayInfo(dataManager->getInfo());
         experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
     });
 
     // === ОКНО ЭКСПЕРИМЕНТА ===
@@ -125,6 +130,7 @@ int main(int argc, char *argv[]) {
         experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
         experimentWindow->labelsUpdate(geneticAlgorithm->getBestCostOfAllTime(), geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
         experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
     });
 
     // Запуск алгоритма
@@ -133,6 +139,7 @@ int main(int argc, char *argv[]) {
         experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
         experimentWindow->labelsUpdate(geneticAlgorithm->getBestCostOfAllTime(), geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
         experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
     });
 
     return app.exec();

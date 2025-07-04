@@ -5,9 +5,9 @@
 
 struct Item
 {
-    double price;
-    double weight;
-    double unitPrice;
+    float price;
+    float weight;
+    float unitPrice;
 };
 
 #endif

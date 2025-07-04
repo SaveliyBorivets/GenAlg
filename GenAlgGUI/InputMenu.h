@@ -16,6 +16,7 @@ public:
     QString getPath() const;
     QString getGuiText() const;
     void setStatus(std::string newStatus);
+    void displayInfo(std::string dataManagerInfo);
 
 signals:
     void switchToExperiment();
@@ -35,6 +36,7 @@ private:
     QTextEdit* guiText;
     QLabel* statusInputMenu;
     QPushButton* toExperimentButton;
+    QTextEdit* informationText;
 };
 
 #endif // INPUTMENU_H
