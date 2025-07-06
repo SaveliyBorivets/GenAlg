@@ -17,6 +17,7 @@ public:
     QString getGuiText() const;
     void setStatus(std::string newStatus);
     void displayInfo(std::string dataManagerInfo);
+    void enableExperiment(bool enable);
 
 signals:
     void switchToExperiment();

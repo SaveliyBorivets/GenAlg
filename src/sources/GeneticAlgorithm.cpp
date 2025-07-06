@@ -1,7 +1,8 @@
 #include "../headers/GeneticAlgorithm.hpp"
 
 // Конструктор
-GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(1, CrossoverType::Uniform), mutation(0.01, MutationType::ADD_REMOVE) {
+GeneticAlgorithm::GeneticAlgorithm(DataManager data) : Data(data), crossover(0.7, CrossoverType::Uniform), mutation(0.01, MutationType::ADD_REMOVE),
+bestOfAllIndivids(Backpack(std::vector<int>(Data.getItems().size(), 0))) {
     std::random_device rd;
     gen.seed(rd());
     selectionMethod = SelectionType::Tournament;
@@ -125,17 +126,13 @@ Backpack GeneticAlgorithm::rewriteSolution(Backpack backpack){
 }
 
 Backpack GeneticAlgorithm::getBestOfAllIndivids() {
-    if (Data.getFitness() == FitnessType::Gentle) {
-        bestOfAllIndivids = rewriteSolution(bestOfAllIndivids);
-    }
+    bestOfAllIndivids = rewriteSolution(bestOfAllIndivids);
     return bestOfAllIndivids;
 }
 
 std::vector<Backpack> GeneticAlgorithm::getBestIndivids() {
-    if (Data.getFitness() == FitnessType::Gentle) {
-        for (int i = 0; i < bestIndivids.size(); ++i) {
-            bestIndivids[i] = rewriteSolution(bestIndivids[i]);
-        }
+    for (int i = 0; i < bestIndivids.size(); ++i) {
+        bestIndivids[i] = rewriteSolution(bestIndivids[i]);
     }
     return bestIndivids;
 }
@@ -158,28 +155,32 @@ std::string GeneticAlgorithm::getInfo() {
     switch (crossover.getType())
     {
     case CrossoverType::OnePoint:
-        info += "OnePoint\n";
+        info += "OnePoint ";
         break;
     case CrossoverType::TwoPoint:
-        info += "TwoPoint\n";
+        info += "TwoPoint ";
         break;
     case CrossoverType::Uniform:
-        info += "Uniform\n";
+        info += "Uniform ";
         break;
     default:
         break;
     }
+    info += std::to_string(crossover.getProbability()) + '\n';
+
     switch (mutation.getType())
     {
     case MutationType::CHANGE:
-        info += "Change\n";
+        info += "Change ";
         break;
     case MutationType::ADD_REMOVE:
-        info += "Add_remove\n";
+        info += "Add_remove ";
         break;
     default:
         break;
     }
+    info += std::to_string(mutation.getProbability()) + '\n';
+
     switch (selectionMethod)
     {
     case SelectionType::Tournament:
@@ -250,6 +251,7 @@ void GeneticAlgorithm::runGeneration() {
 // Запуск алгоритма
 void GeneticAlgorithm::run() {
     int count = 0;
+    int currentRunCount = 0;
     float previousFitness;
     runGeneration(); 
     while (count != 50) {
@@ -260,16 +262,24 @@ void GeneticAlgorithm::run() {
         } else {
             count = 0;
         }
+        currentRunCount++;
+        if (selectionMethod == SelectionType::Roulette && currentRunCount > 250) break;
+        if (selectionMethod == SelectionType::Tournament && currentRunCount > 1000) break;
     }
     std::cout << "Прогресс среднего: " << averageFitnessHistory.back() - averageFitnessHistory[0]
         << " Прогрес лучшего: " << bestFitnessHistory.back() - bestFitnessHistory[0] << std::endl;
 }
 
 void GeneticAlgorithm::restart(DataManager data) {
+  	Data = data;
+    bestIndivids.clear();
+    population.clear();
     fitnesses.clear();
     averageFitnessHistory.clear();
     bestFitnessHistory.clear();
     generationCount = 0;
+    bestCostOfAllTime = 0;
+    bestOfAllIndivids = Backpack(std::vector<int>(Data.getItems().size(), 0));
     for (int i = 0; i < Data.getPopulationSize(); ++i) {
         Backpack randomBackpack(data);
         population.emplace_back(randomBackpack);
@@ -290,4 +300,9 @@ void GeneticAlgorithm::setSelectionType(SelectionType t) {
 
 int GeneticAlgorithm::getGenerationCount() {
     return generationCount;
+}
+
+void GeneticAlgorithm::setProbabilities(float crossoverProbability, float mutationProbability) {
+  	crossover.setProbability(crossoverProbability);
+    mutation.setProbability(mutationProbability);
 }

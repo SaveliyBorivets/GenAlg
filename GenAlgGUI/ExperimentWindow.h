@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QChartView>
 #include <QTextEdit>
+#include <QDoubleSpinBox>
 
 // Для таблицы
 #include <QTableWidget>
@@ -26,6 +27,7 @@ public:
     void statusUpdate(std::string newStatus);
     void displayInfo(std::string dataManagerInfo, std::string genAlgInfo, std::string populationInfo);
     void createTable(std::vector<Item> items, Backpack best_solution, std::vector<Backpack> bestSolutions); // Визуализация решения
+    std::pair<float, float> getProbs();
 
 signals:
     void switchToInputMenu();
@@ -35,6 +37,7 @@ signals:
     void selectionTypeSelected(int index);
     void runOneIteration();
     void runToTheEnd();
+    void updateProbs();
 
 private:
     void setupUI();
@@ -47,8 +50,11 @@ private:
     QComboBox* comboCrossover;
     QComboBox* comboMutation;
 
+    QDoubleSpinBox* mutationSpinBox;
+    QDoubleSpinBox* crossoverSpinBox;
+
     // Кнопки
-    QPushButton* printPopulationButton;
+    QPushButton* probsButton;
     QPushButton* nextStepButton;
     QPushButton* toEndButton;
     QPushButton* toInputMenuButton;

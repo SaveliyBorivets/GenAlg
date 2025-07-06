@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 
 // Метод отбора
@@ -22,7 +23,7 @@ class GeneticAlgorithm {
 private:
     std::mt19937 gen;
     DataManager Data;
-    Backpack bestOfAllIndivids = Backpack(std::vector<int>(Data.getItems().size(), 0));
+    Backpack bestOfAllIndivids;
     std::vector<Backpack> bestIndivids;
     std::vector<Backpack> population; // Популяция
     std::vector<float> fitnesses; // Пригодности
@@ -63,6 +64,7 @@ public:
     void setCrossoverType(CrossoverType t);
     void setMutationType(MutationType t);
     void setSelectionType(SelectionType t);
+    void setProbabilities(float crossoverProbability, float mutationProbability);
 };
 
 #endif

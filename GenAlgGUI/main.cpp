@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     QStackedWidget* switcher = new QStackedWidget;
     switcher->setWindowTitle("GenAlg GUI");
     switcher->setMinimumHeight(1000);
-    switcher->setMinimumWidth(1280);
+    switcher->setMinimumWidth(1340);
 
     // Добавление меню ввода
     InputMenu* inputMenu = new InputMenu;
@@ -48,12 +48,19 @@ int main(int argc, char *argv[]) {
         dataManager = new DataManager;
         QString qPath = inputMenu->getPath();
         std::string path = qPath.toStdString();
-        inputMenu->setStatus(dataManager->loadFile(path));
-        delete geneticAlgorithm;
-        geneticAlgorithm = new GeneticAlgorithm(*dataManager);
-        inputMenu->displayInfo(dataManager->getInfo());
-        experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
-        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
+        std::string readStatus = dataManager->loadFile(path);
+        inputMenu->setStatus(readStatus);
+        if (readStatus == "Данные успешно считаны") {
+        	inputMenu->displayInfo(dataManager->getInfo());
+            geneticAlgorithm->restart(*dataManager);
+            experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
+           	experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        	experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
+            inputMenu->enableExperiment(true);
+        } else {
+          	inputMenu->displayInfo(readStatus);
+            inputMenu->enableExperiment(false);
+        }
     });
 
     QObject::connect(inputMenu, &InputMenu::getDataFromGui, [&]() mutable {
@@ -61,11 +68,19 @@ int main(int argc, char *argv[]) {
         dataManager = new DataManager;
         QString qGuiData = inputMenu->getGuiText();
         std::string guiData = qGuiData.toStdString();
-        inputMenu->setStatus(dataManager->stringParse(guiData));
-        delete geneticAlgorithm;
-        geneticAlgorithm = new GeneticAlgorithm(*dataManager);
-        inputMenu->displayInfo(dataManager->getInfo());
-        experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
+        std::string readStatus = dataManager->stringParse(guiData);
+        inputMenu->setStatus(readStatus);
+        if (readStatus == "Данные успешно считаны") {
+        	inputMenu->displayInfo(dataManager->getInfo());
+            geneticAlgorithm->restart(*dataManager);
+            experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
+           	experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+        	experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
+            inputMenu->enableExperiment(true);
+        } else {
+          	inputMenu->displayInfo(readStatus);
+            inputMenu->enableExperiment(false);
+        }
     });
 
     QObject::connect(inputMenu, &InputMenu::generateRandomDataManager, [&]() mutable {
@@ -73,11 +88,12 @@ int main(int argc, char *argv[]) {
         dataManager = new DataManager;
         dataManager->randomLoad();
         inputMenu->setStatus("Случайные данные сгенерированы");
-        delete geneticAlgorithm;
-        geneticAlgorithm = new GeneticAlgorithm(*dataManager);
         inputMenu->displayInfo(dataManager->getInfo());
+        geneticAlgorithm->restart(*dataManager);
+        experimentWindow->chartViewUpdate(geneticAlgorithm->getBestFitness(), geneticAlgorithm->getAverageFitness());
         experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
         experimentWindow->createTable(dataManager->getItems(), geneticAlgorithm->getBestOfAllIndivids(), geneticAlgorithm->getBestIndivids());
+        inputMenu->enableExperiment(true);
     });
 
     // === ОКНО ЭКСПЕРИМЕНТА ===
@@ -122,6 +138,13 @@ int main(int argc, char *argv[]) {
             }
             experimentWindow->statusUpdate("Смена метода отбора");
             experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
+    });
+
+    QObject::connect(experimentWindow, &ExperimentWindow::updateProbs, [&]() {
+        std::pair<float, float> probs = experimentWindow->getProbs();
+        experimentWindow->statusUpdate("Обновление вероятностей");
+        geneticAlgorithm->setProbabilities(probs.first, probs.second);
+        experimentWindow->displayInfo(dataManager->getInfo(), geneticAlgorithm->getInfo(), geneticAlgorithm->getCurrentPopulation());
     });
 
     // Кнопки

@@ -1,6 +1,6 @@
 #include "../headers/Mutation.hpp"
 
-Mutation::Mutation(float prob, MutationType type) : IsMutation(prob), mutation(type) {
+Mutation::Mutation(float prob, MutationType type) : probability(prob), mutation(type) {
   std::random_device rd;
   gen.seed(rd());
 }
@@ -38,7 +38,7 @@ void Mutation::mutateChange(Backpack& backpack) {
 
 void Mutation::getMutation(Backpack& backpack) {
   std::uniform_real_distribution<float> chance(0.0, 1.0);
-  if (chance(gen) > IsMutation) return;
+  if (chance(gen) > probability) return;
   std::vector<int> solution = backpack.getSolution();
   switch (mutation) {
     case MutationType::ADD_REMOVE:
@@ -56,4 +56,12 @@ void Mutation::setType(MutationType t) {
 
 MutationType Mutation::getType() {
   return mutation;
+}
+
+void Mutation::setProbability(float prob) {
+  probability = prob;
+}
+
+float Mutation::getProbability() {
+  return probability;
 }

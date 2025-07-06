@@ -53,6 +53,7 @@ void InputMenu::setupUI() {
     toExperimentButton = new QPushButton("К эксперименту");
     inputMenuLayout->addWidget(toExperimentButton);
     connect(toExperimentButton, &QPushButton::clicked, this, &InputMenu::switchToExperiment);
+    toExperimentButton->setEnabled(false);
 
     // Получение пути к txt
     connect(txtInputButton, &QPushButton::clicked, this, &InputMenu::getDataFromTxt);
@@ -70,6 +71,10 @@ QString InputMenu::getPath() const {
 
 QString InputMenu::getGuiText() const {
     return guiText->toPlainText();
+}
+
+void InputMenu::enableExperiment(bool enable) {
+    toExperimentButton->setEnabled(enable);
 }
 
 void InputMenu::setStatus(std::string newStatus) {

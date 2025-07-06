@@ -47,25 +47,44 @@ void ExperimentWindow::setupUI() {
     gridLayout->addWidget(labelMutation, 0, 3);
     gridLayout->addWidget(comboMutation, 1, 3);
 
+    // Вероятности
+    crossoverSpinBox = new QDoubleSpinBox();
+    crossoverSpinBox->setRange(0.0, 1.0);   // Диапазон значений
+    crossoverSpinBox->setDecimals(2);       // 2 знака после запятой
+    crossoverSpinBox->setPrefix("Вероятность скрещивания: ");
+    crossoverSpinBox->setValue(0.7);        // Значение по умолчанию
+    crossoverSpinBox->setFixedWidth(250);
+
+    gridLayout->addWidget(crossoverSpinBox, 0, 4);
+
+	mutationSpinBox = new QDoubleSpinBox();
+    mutationSpinBox->setRange(0.0, 1.0);   // Диапазон значений
+    mutationSpinBox->setDecimals(2);       // 2 знака после запятой
+    mutationSpinBox->setPrefix("Вероятность мутации: ");
+    mutationSpinBox->setValue(0.01);        // Значение по умолчанию
+    mutationSpinBox->setFixedWidth(250);
+
+    gridLayout->addWidget(mutationSpinBox, 1, 4);
+
     // === Кнопки ===
     // Вывод популяции
-    printPopulationButton = new QPushButton("Дополнительная информация");
-    printPopulationButton->setFixedSize(200, 70);
-    gridLayout->addWidget(printPopulationButton, 2, 4);
+    probsButton = new QPushButton("Обновить вероятностей");
+    probsButton->setFixedSize(250, 70);
+    gridLayout->addWidget(probsButton, 2, 4);
 
     // Следующая итерация
     nextStepButton = new QPushButton("Следующий шаг");
-    nextStepButton->setFixedSize(200, 70);
+    nextStepButton->setFixedSize(250, 70);
     gridLayout->addWidget(nextStepButton, 3, 4);
 
     // До конца
     toEndButton = new QPushButton("Выполнить до конца");
-    toEndButton->setFixedSize(200, 70);
+    toEndButton->setFixedSize(250, 70);
     gridLayout->addWidget(toEndButton, 4, 4);
 
     // Переход на меню ввода
     toInputMenuButton = new QPushButton("Обновить исходные данные");
-    toInputMenuButton->setFixedSize(200, 70);
+    toInputMenuButton->setFixedSize(250, 70);
     gridLayout->addWidget(toInputMenuButton, 5, 4);
 
     // Информация о лучшем решении
@@ -92,13 +111,7 @@ void ExperimentWindow::setupUI() {
     informationText->setText("Необходимо ввести данные");
     gridLayout->addWidget(informationText, 10, 0, 1, 5);
 
-//    std::vector<float> prices = {0f, 22.3f, 18.0f, 9.9f};
-//    std::vector<float> weights = {1.1f, 2.4f, 1.7f, 0.8f};
-//    std::vector<int> best_solution = {1, 0, 1, 0};
-//    std::vector<int> current_best = {1, 0, 0, 1};
-
     table = new QTableWidget(this);
-//    createTable(prices, weights, best_solution, current_best);
     gridLayout->addWidget(table, 11, 0, 1, 5);
 
     // График
@@ -108,6 +121,8 @@ void ExperimentWindow::setupUI() {
 
     // ======= АКТИВАЦИЯ КНОПОК ========
     // Переход к меню ввода
+    connect(probsButton, &QPushButton::clicked, this, &ExperimentWindow::updateProbs);
+
     connect(toInputMenuButton, &QPushButton::clicked, this, &ExperimentWindow::switchToInputMenu);
 
     // Коннект выпадающих меню
@@ -147,13 +162,13 @@ void ExperimentWindow::chartViewUpdate(std::vector<float> bestFitness, std::vect
 
     // Проверка инициализации
     if (!chart || !chartView) {
-        qCritical() << "Chart not initialized!";
+        qCritical() << "График не инициализирован.";
         return;
     }
 
     // Проверка входных данных
     if (bestFitness.empty() || averageFitness.empty() || bestFitness.size() != averageFitness.size()) {
-        qWarning() << "Invalid input data sizes";
+        qWarning() << "График: На текущий момент данных нет.";
         return;
     }
 
@@ -232,6 +247,12 @@ void ExperimentWindow::labelsUpdate(float bestFitness, std::vector<float> curren
 void ExperimentWindow::createTable(std::vector<Item> items,
                                  Backpack best_solution,
                                  std::vector<Backpack> bestSolutions) {
+    // Проверка инициализации таблицы
+    if (!table) {
+        qCritical("Таблица не инициализирована!");
+        return;
+    }
+
     // Подготовка данных
     std::vector<float> prices, weights;
     for (const auto& item : items) {
@@ -245,80 +266,78 @@ void ExperimentWindow::createTable(std::vector<Item> items,
         return;
     }
 
+    // Проверка решений
+    std::vector<int> best_solution_vec = best_solution.getSolution();
+    if (best_solution_vec.size() != n) {
+        qWarning("Размер best_solution не совпадает с количеством предметов!");
+        return;
+    }
+
+    for (const auto& solution : bestSolutions) {
+        if (solution.getSolution().size() != n) {
+            qWarning("Одно из решений имеет неверный размер!");
+            return;
+        }
+    }
+
     // Очищаем таблицу
     table->clear();
 
-    // Устанавливаем размеры (4 строки + строки для решений, n столбцов)
+    // Устанавливаем размеры
     int row_count = 4 + static_cast<int>(bestSolutions.size());
     table->setRowCount(row_count);
     table->setColumnCount(static_cast<int>(n));
 
-    // Устанавливаем заголовки строк
+    // Заполняем заголовки
     QStringList row_labels;
     row_labels << "Цены" << "Веса" << "Наилучшее решение" << "Текущее лучшее";
-
-    // Добавляем заголовки для каждого решения
     for (size_t i = 0; i < bestSolutions.size(); ++i) {
         row_labels << QString("Лучшее в %1").arg(i+1);
     }
     table->setVerticalHeaderLabels(row_labels);
 
-    // Получаем наилучшее решение
-    std::vector<int> best_solution_vec = best_solution.getSolution();
-
-    // Заполняем основные данные
+    // Заполняем данные
     for (size_t col = 0; col < n; ++col) {
         // Цены
-        QTableWidgetItem* price_item = new QTableWidgetItem(QString::number(prices[col]));
+        auto price_item = new QTableWidgetItem(QString::number(prices[col]));
         table->setItem(0, static_cast<int>(col), price_item);
 
         // Веса
-        QTableWidgetItem* weight_item = new QTableWidgetItem(QString::number(weights[col]));
+        auto weight_item = new QTableWidgetItem(QString::number(weights[col]));
         table->setItem(1, static_cast<int>(col), weight_item);
 
-        // Наилучшее решение (всегда зеленое)
-        QTableWidgetItem* best_item = new QTableWidgetItem(QString::number(best_solution_vec[col]));
+        // Наилучшее решение
+        auto best_item = new QTableWidgetItem(QString::number(best_solution_vec[col]));
         best_item->setBackground(Qt::green);
         table->setItem(2, static_cast<int>(col), best_item);
     }
 
-    // Заполняем решения и сравниваем с наилучшим
+    // Заполняем решения
     for (size_t row = 0; row < bestSolutions.size(); ++row) {
         std::vector<int> current_solution = bestSolutions[row].getSolution();
 
         for (size_t col = 0; col < n; ++col) {
-            QTableWidgetItem* solution_item = new QTableWidgetItem(
-                QString::number(current_solution[col]));
-
-            // Сравниваем с наилучшим решением
-            bool is_best = (current_solution[col] == best_solution_vec[col]);
-            solution_item->setBackground(is_best ? Qt::green : Qt::white);
-
+            auto solution_item = new QTableWidgetItem(QString::number(current_solution[col]));
+            solution_item->setBackground(current_solution[col] == best_solution_vec[col] ? Qt::green : Qt::white);
             table->setItem(static_cast<int>(row + 3), static_cast<int>(col), solution_item);
         }
     }
 
-    table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);  // Плавная прокрутка
-    table->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);  // Фиксируем высоту строк
-
-    table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    table->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    // Настройка отображения
+    // Настройки таблицы
     table->resizeColumnsToContents();
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    table->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 }
 
 void ExperimentWindow::statusUpdate(std::string newStatus) {
     statusExperimentWindow->setText(QString::fromStdString("Статус: " + newStatus));
 }
 
-#include <iostream>
-
 void ExperimentWindow::displayInfo(std::string dataManagerInfo, std::string genAlgInfo, std::string populationInfo) {
     informationText->setText(QString::fromStdString("Данные задачи\n" + dataManagerInfo + "\nТекущие настройки\n" + genAlgInfo + "\nПопуляция\n" + populationInfo));
+}
+
+std::pair<float, float> ExperimentWindow::getProbs() {
+    return {crossoverSpinBox->value(), mutationSpinBox->value()};
 }

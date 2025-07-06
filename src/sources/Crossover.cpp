@@ -92,3 +92,11 @@ void Crossover::setType(CrossoverType t) {
 CrossoverType Crossover::getType() {
   return type;
 }
+
+void Crossover::setProbability(float prob) {
+  probability = prob;
+}
+
+float Crossover::getProbability() {
+  return probability;
+}
